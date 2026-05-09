@@ -7,6 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agro.com</title>
     <style>
+        body{
+    background-image: url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1600");
+    
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}   
         *{
             margin: 0;
             padding: 0;
@@ -14,20 +22,29 @@
             box-sizing: border-box;
         }
         .inicio {
-            background: green;
-            text-align: center;
-            color: white;
-            padding: 16px; 
-            position: absolute;
-            width: 100%;
+    background: green;
+    text-align: center;
+    color: white;
+    padding: 16px;
+    width: 100%;
 
-        }
+    z-index: 3000;
+
+    position: fixed; /* fixo no topo */
+    top: 0;
+    left: 0;
+}
         /*menu*/
         .menu {
             position: absolute;
             top: 18px;
-            font-size: 18px;
+            font-size: 20px;
             cursor: pointer;
+            border-radius: 5px;
+        }
+        .menu:hover{
+           font-size: 16px;
+           transition: all 0.3s;
         }
         .menu a {
             color: white;
@@ -35,20 +52,30 @@
         /*meio*/
         .meio {
     margin-top: 53px;
-    background: gray;
+
+    background-image: url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1600");
+
     width: 230px;
     height: 100vh;
-    position: fixed;
+
+    position: fixed; /* deixa o menu fixo */
+
     top: 0;
     left: -230px;
+
     transition: 0.4s;
+
+    z-index: 2000;
+
+    background-size: cover;
+    background-position: center;
 }
        
 .meio.abrir{
 left: 0;
 }
         .meio a {
-            
+    
     color: white;
     text-decoration: none;
     font-size: 18px;
@@ -66,6 +93,234 @@ left: 0;
         .meio a {
            top: 9px;
         }
+        .carrocel{
+    width: 100%;
+    overflow: hidden;
+
+    position: relative;
+    z-index: 1000;
+
+    padding: 20px 0;
+    top: 50px;
+}
+
+.slide{
+    display: flex;
+    width: max-content;
+
+    animation: infinito 10s linear infinite;
+}
+ul{
+    min-width: 180px;
+    height: 180px;
+
+    background: green;
+    color: white;
+
+    border-radius: 10px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 25px;
+
+    flex-shrink: 0;
+
+    list-style: none;
+
+    overflow: hidden;
+}
+
+.fotos{
+    display: flex;
+    gap: 5px;
+
+    padding-right: 5px;
+}
+@keyframes infinito{
+    from{
+        transform: translateX(0);
+    }
+
+    to{
+        transform: translateX(-50%);
+    }
+}
+
+img{
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    border-radius: 10px;
+}
+    .carrocel:hover .slide{
+    animation-play-state: paused;
+}
+    ul a{
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+.noticias{
+    padding: 20px;
+    margin-top: 50px;
+}
+
+.noticias h2{
+    color: white;
+    margin-bottom: 15px;
+}
+
+.card-noticia{
+    background: rgba(255,255,255,0.9);
+
+    margin-bottom: 15px;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    padding: 10px;
+}
+
+.card-noticia img{
+    width: 100%;
+    height: 200px;
+
+    object-fit: cover;
+
+    border-radius: 10px;
+}
+
+.card-noticia h3{
+    margin-top: 10px;
+    color: green;
+}
+
+.card-noticia p{
+    margin-top: 8px;
+    color: black;
+}
+
+.card-noticia a{
+    display: inline-block;
+
+    margin-top: 10px;
+
+    background: green;
+    color: white;
+
+    padding: 8px 12px;
+
+    border-radius: 5px;
+
+    text-decoration: none;
+}
+/*carrocel noticia*/
+/* CARROSSEL AGRO */
+
+.carrossel-agro{
+    width: 100%;
+    overflow: hidden;
+
+    margin-top: 80px;
+
+    padding: 20px 0;
+
+    position: relative;
+}
+
+.slide-agro{
+    display: flex;
+
+    gap: 15px;
+
+    width: max-content;
+
+    animation: agroInfinito 20s linear infinite;
+}
+
+.foto-agro{
+    width: 320px;
+    height: 220px;
+
+    flex-shrink: 0;
+
+    overflow: hidden;
+
+    border-radius: 15px;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+.foto-agro img{
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition: 0.4s;
+}
+
+.foto-agro img:hover{
+    transform: scale(1.05);
+}
+
+/* pausa ao passar mouse */
+.carrossel-agro:hover .slide-agro{
+    animation-play-state: paused;
+}
+
+/* movimento infinito REAL */
+@keyframes agroInfinito{
+
+    from{
+        transform: translateX(0);
+    }
+
+    to{
+        transform: translateX(calc(-335px * 4));
+    }
+
+}
+.foto-noticia{
+    width: 100%;
+    height: 200px;
+
+    object-fit: cover;
+
+    border-radius: 10px;
+}
+
+.empresa-box{
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 10px;
+}
+
+.logo-empresa{
+    width: 45px;
+    height: 45px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    object-fit: contain;
+
+    padding: 5px;
+}
+
+.empresa-box span{
+    font-weight: bold;
+    color: green;
+}
     </style>
 </head>
 <body>
@@ -96,6 +351,70 @@ left: 0;
             </a>
         </div>
     </nav>
+    <!--carrocel-->
+    
+   <!-- CARROSSEL INFINITO DE FOTOS -->
+<div class="carrossel-agro">
+
+    <div class="slide-agro">
+
+        <!-- BLOCO 1 -->
+        <div class="foto-agro">
+            <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1200">
+        </div>
+
+        <div class="foto-agro">
+            <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=1200">
+        </div>
+
+        <div class="foto-agro">
+            <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=1200">
+        </div>
+
+        <div class="foto-agro">
+            <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=1200">
+        </div>
+
+        <!-- BLOCO DUPLICADO -->
+        <div class="foto-agro">
+            <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1200">
+        </div>
+
+        <div class="foto-agro">
+            <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=1200">
+        </div>
+
+        <div class="foto-agro">
+            <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=1200">
+        </div>
+
+        <div class="foto-agro">
+            <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=1200">
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+</div>
+
+
+</div>
+    <!-- Notícias -->
+<div class="noticias">
+
+<h2>
+    <i class="bi bi-journal"></i>
+    <span>Notícias do Agronegócio</span>
+</h2>
+
+
+    <div id="listaNoticias"></div>
+
+</div>
+</div>
     <!--script-->
     <script>
         const menu = document.getElementsByClassName("menu")[0];
@@ -107,5 +426,85 @@ left: 0;
             meio.classList.toggle("abrir");
         });
     </script>
+    <script>
+
+const noticias = [
+ 
+    {
+        titulo: "Exportações do agronegócio crescem no Brasil",
+        descricao: "O setor agropecuário continua aumentando suas exportações em 2026.",
+        
+        imagem: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1200",
+
+        empresa: "Canal Rural",
+
+        logo: "https://logodownload.org/wp-content/uploads/2017/11/canal-rural-logo.png",
+
+        link: "https://www.canalrural.com.br/"
+    },
+
+    {
+        titulo: "Novas tecnologias no campo",
+        descricao: "Máquinas inteligentes ajudam produtores rurais a aumentar produtividade.",
+
+        imagem: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=1200",
+
+        empresa: "John Deere",
+
+        logo: "https://upload.wikimedia.org/wikipedia/commons/3/32/John_Deere_logo.svg",
+
+        link: "https://www.johndeere.com.br/"
+    },
+
+    {
+        titulo: "Clima influencia safra deste ano",
+        descricao: "Produtores acompanham mudanças climáticas para proteger plantações.",
+
+        imagem: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=1200",
+
+        empresa: "Agrolink",
+
+        logo: "https://cdn-icons-png.flaticon.com/512/2921/2921822.png",
+
+        link: "https://www.agrolink.com.br/"
+    }
+
+];
+
+const lista = document.getElementById("listaNoticias");
+
+noticias.forEach(noticia => {
+
+    lista.innerHTML += `
+    
+    <div class="card-noticia">
+
+        <!-- FOTO DA NOTÍCIA -->
+        <img src="${noticia.imagem}" class="foto-noticia">
+
+        <!-- EMPRESA -->
+        <div class="empresa-info">
+
+
+            <span>${noticia.empresa}</span>
+
+        </div>
+
+        <!-- TEXOS -->
+        <h3>${noticia.titulo}</h3>
+
+        <p>${noticia.descricao}</p>
+
+        <!-- BOTÃO -->
+        <a href="${noticia.link}" target="_blank">
+            Ler notícia
+        </a>
+
+    </div>
+
+    `;
+});
+
+</script>
 </body>
-</html>
+</html> 
