@@ -11,7 +11,7 @@
     background-image: url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1600");
     
     background-size: cover;
-    background-position: center;
+    background-position: center;;
     background-repeat: no-repeat;
     background-attachment: fixed;
 }   
@@ -41,10 +41,6 @@
             font-size: 20px;
             cursor: pointer;
             border-radius: 5px;
-        }
-        .menu:hover{
-           font-size: 16px;
-           transition: all 0.3s;
         }
         .menu a {
             color: white;
@@ -322,6 +318,126 @@ img{
     font-weight: bold;
     color: green;
 }
+/* VIDEOS AGRO */
+
+.videos-agro{
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.videos-agro h2{
+    color: white;
+    margin-bottom: 15px;
+}
+
+.box-videos{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+    gap: 20px;
+}
+
+.video-card{
+    background: rgba(255,255,255,0.9);
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
+    padding: 10px;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+.video-card iframe{
+    width: 100%;
+    height: 220px;
+
+    border: none;
+
+    border-radius: 10px;
+}
+
+.video-card h3{
+    margin-top: 10px;
+    color: green;
+}
+
+.video-card p{
+    margin-top: 8px;
+    color: black;
+}
+/* AGRO TEMPO */
+
+.agro-tempo{
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.box-tempo{
+    background: rgba(255,255,255,0.9);
+
+    border-radius: 15px;
+
+    padding: 20px;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+
+    text-align: center;
+}
+
+.box-tempo h2{
+    color: green;
+    margin-bottom: 15px;
+}
+
+.tempo-info{
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+
+    margin-top: 15px;
+}
+
+.tempo-item{
+    background: green;
+    color: white;
+
+    padding: 15px;
+
+    border-radius: 10px;
+
+    min-width: 120px;
+}
+
+.tempo-item h3{
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.tempo-item p{
+    font-size: 20px;
+    font-weight: bold;
+}
+.tempo-item{
+    background: linear-gradient(135deg, green, darkgreen);
+
+    color: white;
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    min-width: 140px;
+
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+
+    transition: 0.3s;
+}
+
+.tempo-item:hover{
+    transform: translateY(-5px);
+}
     </style>
 </head>
 <body>
@@ -361,7 +477,9 @@ img{
 
         <!-- BLOCO 1 -->
         <div class="foto-agro">
+             <a href="#"></a>
             <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1200">
+            
         </div>
 
         <div class="foto-agro">
@@ -416,6 +534,44 @@ img{
 
 </div>
 </div>
+
+   
+<!-- VIDEOS AGRO -->
+<div class="videos-agro">
+
+    <h2>
+        <i class="bi bi-play-circle"></i>
+        Vídeos Atualizados do Agronegócio
+    </h2>
+
+    <div class="box-videos" id="videosAgro">
+
+        <p style="color:white;">
+            Carregando vídeos...
+        </p>
+
+    </div>
+
+</div>
+
+
+    <!-- PREVISÃO DO TEMPO -->
+<div class="agro-tempo">
+
+    <div class="box-tempo">
+
+        <h2>
+            <i class="bi bi-cloud-sun"></i>
+            Clima no Campo
+        </h2>
+
+        <div id="tempoCidade">
+            Carregando previsão do tempo...
+        </div>
+
+    </div>
+
+</div>
     <!--script-->
     <script>
         const menu = document.getElementsByClassName("menu")[0];
@@ -427,76 +583,285 @@ img{
             meio.classList.toggle("abrir");
         });
     </script>
-    <script>
+    
+  <script>
 
-const noticias = [
- 
-    {
-        titulo: "Exportações do agronegócio crescem no Brasil",
-        descricao: "O setor agropecuário continua aumentando suas exportações em 2026.",
-        
-        imagem: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1200",
+async function carregarTempo(latitude, longitude){
 
-        empresa: "Canal Rural",
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,weather_code&timezone=auto`;
 
-        logo: "https://logodownload.org/wp-content/uploads/2017/11/canal-rural-logo.png",
+    try{
 
-        link: "https://www.canalrural.com.br/"
-    },
+        const resposta = await fetch(url);
 
-    {
-        titulo: "Novas tecnologias no campo",
-        descricao: "Máquinas inteligentes ajudam produtores rurais a aumentar produtividade.",
+        const dados = await resposta.json();
 
-        imagem: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=1200",
+        const clima = dados.current;
 
-        empresa: "John Deere",
+        // PEGAR CIDADE
+        const cidadeURL = `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}&api_key=`;
 
-        logo: "https://upload.wikimedia.org/wikipedia/commons/3/32/John_Deere_logo.svg",
+        let cidade = "Sua região";
 
-        link: "https://www.johndeere.com.br/"
-    },
+        try{
 
-    {
-        titulo: "Clima influencia safra deste ano",
-        descricao: "Produtores acompanham mudanças climáticas para proteger plantações.",
+            const cidadeResp = await fetch(cidadeURL);
+            const cidadeDados = await cidadeResp.json();
 
-        imagem: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=1200",
+            cidade =
+                cidadeDados.address.city ||
+                cidadeDados.address.town ||
+                cidadeDados.address.village ||
+                "Sua região";
 
-        empresa: "Agrolink",
+        }catch(e){}
 
-        logo: "https://cdn-icons-png.flaticon.com/512/2921/2921822.png",
+        // HORÁRIO CORRETO
+        const horario = new Date().toLocaleTimeString("pt-BR",{
+            hour:"2-digit",
+            minute:"2-digit"
+        });
 
-        link: "https://www.agrolink.com.br/"
+        // CLIMA TEXTO
+        let descricao = "Clima normal";
+
+        if(clima.weather_code <= 1){
+            descricao = "Ensolarado";
+        }
+        else if(clima.weather_code <= 3){
+            descricao = "Nublado";
+        }
+        else if(clima.weather_code <= 67){
+            descricao = "Chuva";
+        }
+        else if(clima.weather_code <= 77){
+            descricao = "Neve";
+        }
+        else{
+            descricao = "Tempestade";
+        }
+
+        document.getElementById("tempoCidade").innerHTML = `
+
+            
+
+            <div class="tempo-info">
+
+                <div class="tempo-item">
+                    <h3>Temperatura</h3>
+                    <p>${clima.temperature_2m}°C</p>
+                </div>
+
+                <div class="tempo-item">
+                    <h3>Sensação</h3>
+                    <p>${clima.apparent_temperature}°C</p>
+                </div>
+
+                <div class="tempo-item">
+                    <h3>Umidade</h3>
+                    <p>${clima.relative_humidity_2m}%</p>
+                </div>
+
+                <div class="tempo-item">
+                    <h3>Vento</h3>
+                    <p>${clima.wind_speed_10m} km/h</p>
+                </div>
+
+                <div class="tempo-item">
+                    <h3>Clima</h3>
+                    <p>${descricao}</p>
+                </div>
+
+                <div class="tempo-item">
+                    <h3>Horário</h3>
+                    <p>${horario}</p>
+                </div>
+
+            </div>
+
+        `;
+
+    }catch(error){
+
+        document.getElementById("tempoCidade").innerHTML = `
+
+            <p style="color:red;">
+                Erro ao carregar previsão do tempo.
+            </p>
+
+        `;
+
     }
 
-];
+}
 
-const lista = document.getElementById("listaNoticias");
 
-noticias.forEach(noticia => {
+// PEDIR LOCALIZAÇÃO
+function pedirLocalizacao(){
+
+    if(navigator.geolocation){
+
+        navigator.geolocation.getCurrentPosition(
+
+            function(posicao){
+
+                const latitude = posicao.coords.latitude;
+                const longitude = posicao.coords.longitude;
+
+                carregarTempo(latitude, longitude);
+
+            },
+
+            function(){
+
+                document.getElementById("tempoCidade").innerHTML = `
+
+                    <p style="color:red;">
+                        Localização negada pelo usuário.
+                    </p>
+
+                `;
+
+            }
+
+        );
+
+    }else{
+
+        document.getElementById("tempoCidade").innerHTML = `
+
+            <p style="color:red;">
+                Geolocalização não suportada.
+            </p>
+
+        `;
+
+    }
+
+}
+
+// INICIAR
+pedirLocalizacao();
+
+</script>
+ <script>
+
+async function carregarNoticiasAgro(){
+
+    const lista = document.getElementById("listaNoticias");
+
+    lista.innerHTML = `
+        <p style="color:white;">
+            Carregando notícias do agronegócio...
+        </p>
+    `;
+
+    try{
+
+        // RSS DO GOOGLE NEWS AGRO
+        const rss =
+        "https://news.google.com/rss/search?q=agronegocio+agricultura+brasil&hl=pt-BR&gl=BR&ceid=BR:pt-419";
+
+        // API QUE CONVERTE RSS EM JSON
+        const url =
+        `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rss)}`;
+
+        const resposta = await fetch(url);
+
+        const dados = await resposta.json();
+
+        lista.innerHTML = "";
+
+       dados.items.slice(0,8).forEach(noticia => {
+
+    // TITULO MINÚSCULO
+    const titulo = noticia.title.toLowerCase();
+
+    // IMAGEM PADRÃO
+    let imagem =
+    "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1200";
+
+    // TEMA
+    let tema = "Agronegócio";
+
+    // TROCAR IMAGEM PELO TEMA
+    if(titulo.includes("soja")){
+
+        imagem =
+        "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=1200";
+
+        tema = "Soja";
+    }
+
+    else if(
+        titulo.includes("gado") ||
+        titulo.includes("boi") ||
+        titulo.includes("pecuária")
+    ){
+
+        imagem =
+        "https://images.unsplash.com/photo-1516467508483-a7212febe31a?q=80&w=1200";
+
+        tema = "Pecuária";
+    }
+
+    else if(
+        titulo.includes("milho")
+    ){
+
+        imagem =
+        "https://images.unsplash.com/photo-1471193945509-9ad0617afabf?q=80&w=1200";
+
+        tema = "Milho";
+    }
+
+    else if(
+        titulo.includes("tecnologia") ||
+        titulo.includes("máquina")
+    ){
+
+        imagem =
+        "https://images.unsplash.com/photo-1592982537447-7440770cbfc9?q=80&w=1200";
+
+        tema = "Tecnologia Agro";
+    }
+
+    else if(
+        titulo.includes("clima") ||
+        titulo.includes("chuva")
+    ){
+
+        imagem =
+        "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200";
+
+        tema = "Clima";
+    }
 
     lista.innerHTML += `
-    
+
     <div class="card-noticia">
 
-        <!-- FOTO DA NOTÍCIA -->
-        <img src="${noticia.imagem}" class="foto-noticia">
-
-        <!-- EMPRESA -->
-        <div class="empresa-info">
+     
 
 
-            <span>${noticia.empresa}</span>
+        <div class="empresa-box">
+
+           
+
+            <span>
+                ${tema}
+            </span>
 
         </div>
 
-        <!-- TEXOS -->
-        <h3>${noticia.titulo}</h3>
+        <h3>
+            ${noticia.title}
+        </h3>
 
-        <p>${noticia.descricao}</p>
+        <p>
+            Notícias atualizadas do agronegócio brasileiro.
+        </p>
 
-        <!-- BOTÃO -->
         <a href="${noticia.link}" target="_blank">
             Ler notícia
         </a>
@@ -504,8 +869,138 @@ noticias.forEach(noticia => {
     </div>
 
     `;
+
 });
+    }catch(error){
+
+        lista.innerHTML = `
+
+            <p style="color:red;">
+                Erro ao carregar notícias.
+            </p>
+
+        `;
+
+        console.log(error);
+
+    }
+
+}
+
+// CARREGAR
+carregarNoticiasAgro();
+
+// ATUALIZA A CADA 30 MINUTOS
+setInterval(carregarNoticiasAgro, 1800000);
+
+</script>
+<script>
+
+async function carregarVideosAgro(){
+
+    const box = document.getElementById("videosAgro");
+
+    box.innerHTML = `
+        <p style="color:white;">
+            Carregando vídeos do agronegócio...
+        </p>
+    `;
+
+    try{
+
+        // SUA API KEY
+        const API_KEY = "AIzaSyBzITHXZCpM_osI2Nb47qVTC2DwV3D1ocM";
+
+        // PESQUISA
+        const pesquisa = "agronegocio brasil agricultura";
+
+        // API YOUTUBE
+        const url = `
+https://www.googleapis.com/youtube/v3/search?part=snippet&q=${pesquisa}&maxResults=6&type=video&order=date&key=${API_KEY}
+        `;
+
+        const resposta = await fetch(url);
+
+        const dados = await resposta.json();
+
+        box.innerHTML = "";
+
+        dados.items.forEach(video => {
+
+            const titulo = video.snippet.title;
+
+            const descricao =
+            video.snippet.description;
+
+            const videoId =
+            video.id.videoId;
+
+            const imagem =
+            video.snippet.thumbnails.high.url;
+
+            box.innerHTML += `
+
+            <div class="video-card">
+
+                <img 
+                src="${imagem}"
+                style="
+                    width:100%;
+                    height:220px;
+                    object-fit:cover;
+                    border-radius:10px;
+                ">
+
+                <h3>
+                    ${titulo}
+                </h3>
+
+                <p>
+                    ${descricao}
+                </p>
+
+                <a href="
+https://www.youtube.com/watch?v=${videoId}
+                "
+                target="_blank"
+                style="
+                    display:inline-block;
+                    margin-top:10px;
+                    background:green;
+                    color:white;
+                    padding:10px 15px;
+                    border-radius:8px;
+                    text-decoration:none;
+                ">
+                    Assistir Vídeo
+                </a>
+
+            </div>
+
+            `;
+
+        });
+
+    }catch(error){
+
+        box.innerHTML = `
+            <p style="color:red;">
+                Erro ao carregar vídeos.
+            </p>
+        `;
+
+        console.log(error);
+
+    }
+
+}
+
+// INICIAR
+carregarVideosAgro();
+
+// ATUALIZA TODO DIA
+setInterval(carregarVideosAgro, 86400000);
 
 </script>
 </body>
-</html> 
+</html>

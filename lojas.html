@@ -13,12 +13,19 @@
             font-family: 'Courier New', Courier, monospace;
             box-sizing: border-box;
         }
+        body{
+                background-size: cover;
+    background-position: center;;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+            background-image: url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1600");
+        }
         .inicio {
             background: green;
             text-align: center;
             color: white;
             padding: 16px; 
-            position: absolute;
+            position: fixed;
             width: 100%;
 
         }
@@ -34,8 +41,8 @@
         }
         /*meio*/
         .meio {
+    background: url(https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1600);
     margin-top: 53px;
-    background: gray;
     width: 230px;
     height: 100vh;
     position: fixed;
@@ -66,6 +73,54 @@ left: 0;
         .meio a {
            top: 9px;
         }
+/* LOJAS */
+
+.lojas-agro{
+    padding: 20px;
+    
+}
+
+.lojas-agro h2{
+    color: white;
+    margin-bottom: 20px;
+}
+
+.loja-card{
+    background: rgba(255,255,255,0.92);
+
+    border-radius: 15px;
+
+    padding: 15px;
+
+    margin-bottom: 15px;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+.loja-card h3{
+    color: green;
+    margin-bottom: 10px;
+}
+
+.loja-card p{
+    margin-bottom: 8px;
+    color: black;
+}
+
+.loja-card a{
+    display: inline-block;
+
+    margin-top: 10px;
+
+    background: green;
+    color: white;
+
+    text-decoration: none;
+
+    padding: 10px 15px;
+
+    border-radius: 8px;
+}
     </style>
 </head>
 <body>
@@ -96,6 +151,19 @@ left: 0;
             </a>
         </div>
     </nav>
+    <!-- LOJAS AGRO -->
+<div class="lojas-agro">
+
+    <h2>
+        <i class="bi bi-shop"></i>
+        Lojas Agro Próximas
+    </h2>
+
+    <div id="listaLojas">
+        Procurando lojas perto de você...
+    </div>
+
+</div>
     <!--script-->
     <script>
         const menu = document.getElementsByClassName("menu")[0];
@@ -107,5 +175,214 @@ left: 0;
             meio.classList.toggle("abrir");
         });
     </script>
+    <script>
+
+async function buscarLojas(latitude, longitude){
+
+    const query = `
+
+    [out:json];
+
+    (
+      node["shop"](around:8000,${latitude},${longitude});
+      node["shop"="farm"](around:8000,${latitude},${longitude});
+      node["shop"="agrarian"](around:8000,${latitude},${longitude});
+      node["amenity"="marketplace"](around:8000,${latitude},${longitude});
+    );
+
+    out;
+
+    `;
+
+    const url = "https://overpass-api.de/api/interpreter";
+
+    try{
+
+        const resposta = await fetch(url,{
+            method:"POST",
+            body: query
+        });
+
+        const dados = await resposta.json();
+
+        const lista = document.getElementById("listaLojas");
+
+        lista.innerHTML = "";
+
+        // SE NÃO ENCONTRAR LOJAS
+        if(dados.elements.length === 0){
+
+            lista.innerHTML = `
+
+            <div class="loja-card">
+
+                <h3>
+                    Nenhuma loja agro encontrada perto de você
+                </h3>
+
+                <p>
+                    Veja sites confiáveis de produtos agrícolas:
+                </p>
+
+                <br>
+
+                <a href="https://www.johndeere.com.br/" target="_blank">
+                    John Deere
+                </a>
+
+                <br><br>
+
+                <a href="https://www.agrolink.com.br/" target="_blank">
+                    Agrolink
+                </a>
+
+                <br><br>
+
+                <a href="https://www.stihl.com.br/" target="_blank">
+                    STIHL Brasil
+                </a>
+
+                <br><br>
+
+                <a href="https://www.magazineluiza.com.br/busca/agro/" target="_blank">
+                    Produtos Agro Magalu
+                </a>
+
+            </div>
+
+            `;
+
+            return;
+        }
+
+        // MOSTRAR LOJAS
+        dados.elements.slice(0,10).forEach(loja => {
+
+            const nome = loja.tags.name || "Loja Agro";
+
+            const rua =
+                loja.tags["addr:street"] ||
+                "Endereço não informado";
+
+            const maps = `
+            https://www.google.com/maps?q=${loja.lat},${loja.lon}
+            `;
+
+            lista.innerHTML += `
+
+            <div class="loja-card">
+
+                <h3>${nome}</h3>
+
+                <p>
+                    <i class="bi bi-geo-alt"></i>
+                    ${rua}
+                </p>
+
+                <a href="${maps}" target="_blank">
+                    Ver no mapa
+                </a>
+
+            </div>
+
+            `;
+
+        });
+
+    }catch(error){
+
+        document.getElementById("listaLojas").innerHTML = `
+
+        <div class="loja-card">
+
+            <h3>
+                Não foi possível buscar lojas.
+            </h3>
+
+            <p>
+                Veja alguns sites de agronegócio:
+            </p>
+
+            <br>
+
+            <a href="https://www.johndeere.com.br/" target="_blank">
+                John Deere
+            </a>
+
+            <br><br>
+
+            <a href="https://www.agrolink.com.br/" target="_blank">
+                Agrolink
+            </a>
+
+        </div>
+
+        `;
+
+    }
+
+}
+
+
+// PEDIR LOCALIZAÇÃO
+function pedirLocalizacao(){
+
+    if(navigator.geolocation){
+
+        navigator.geolocation.getCurrentPosition(
+
+            function(posicao){
+
+                const latitude = posicao.coords.latitude;
+                const longitude = posicao.coords.longitude;
+
+                buscarLojas(latitude, longitude);
+
+            },
+
+            function(){
+
+                document.getElementById("listaLojas").innerHTML = `
+
+                <div class="loja-card">
+
+                    <h3>
+                        Localização negada
+                    </h3>
+
+                    <p>
+                        Ative a localização para procurar lojas perto de você.
+                    </p>
+
+                </div>
+
+                `;
+
+            }
+
+        );
+
+    }else{
+
+        document.getElementById("listaLojas").innerHTML = `
+
+        <div class="loja-card">
+
+            <h3>
+                Geolocalização não suportada
+            </h3>
+
+        </div>
+
+        `;
+
+    }
+
+}
+
+// iniciar
+pedirLocalizacao();
+
+</script>
 </body>
 </html>
