@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Agro.com/produtos</title>
+
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body{
+            background-image: url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1600");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .tema{
+            text-align: center;
+            background: green;
+            padding: 15px;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* MENU */
+        .menu-ope{
+            font-size: 22px;
+            position: absolute;
+            left: 15px;
+            top: 15px;
+        }
+
+        .menu-ope a{
+            color: white;
+        }
+
+        .catalogo{
+            background: rgba(0,0,0,0.9);
+            width: 230px;
+            height: 100vh;
+            position: fixed;
+            margin-left: -230px;
+            transition: all 0.4s;
+            border-right: 2px solid lime;
+            z-index: 999;
+        }
+
+        .fechar-abrir{
+            margin-left: 0px;
+        }
+
+        .catalogo a{
+            display: block;
+            font-size: 18px;
+            padding: 15px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .catalogo a:hover{
+            border-left: 3px solid lime;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.4s;
+        }
+
+        /* PESQUISA */
+        .pesquisa{
+            width: 90%;
+            max-width: 700px;
+            margin: 30px auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .pesquisa input{
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .pesquisa button{
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            background: green;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .pesquisa button:hover{
+            background: darkgreen;
+        }
+
+        /* PRODUTOS */
+        .produtos{
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+            gap: 20px;
+            padding-bottom: 40px;
+        }
+
+        .card{
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: 0.3s;
+        }
+
+        .card:hover{
+            transform: scale(1.03);
+        }
+
+        .card img{
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .info{
+            padding: 15px;
+        }
+
+        .info h3{
+            margin-bottom: 10px;
+            color: green;
+        }
+
+        .info p{
+            margin-bottom: 10px;
+        }
+
+        .info a{
+            display: inline-block;
+            padding: 10px 15px;
+            background: green;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .info a:hover{
+            background: darkgreen;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TEMA -->
+    <nav class="tema">
+        <h3>Produtos Agrícolas</h3>
+
+        <!-- MENU -->
+        <div class="menu-ope" id="ope">
+            <a href="#">
+                <i class="bi bi-list"></i>
+            </a>
+        </div>
+    </nav>
+
+    <!-- CATALOGO -->
+    <nav class="catalogo" id="catalogo">
+
+        <a href="index.html">
+            <i class="bi bi-house"></i>
+            <span>Home</span>
+        </a>
+
+        <a href="lojas.html">
+            <i class="bi bi-shop"></i>
+            <span>Lojas</span>
+        </a>
+
+    </nav>
+
+    <!-- PESQUISA -->
+    <div class="pesquisa">
+
+        <input 
+            type="text" 
+            id="buscar"
+            placeholder="Pesquisar produto agrícola..."
+        >
+
+        <button onclick="buscarProdutos()">
+            Buscar
+        </button>
+
+    </div>
+
+    <!-- PRODUTOS -->
+    <div class="produtos" id="resultado"></div>
+
+    <!-- SCRIPT -->
+    <script>
+
+        const menu = document.getElementById("ope");
+        const catalogo = document.getElementById("catalogo");
+
+        // MENU
+        menu.addEventListener("click", function(event){
+            event.preventDefault();
+            catalogo.classList.toggle("fechar-abrir");
+        });
+
+   
+    </script>
+    <script>
+
+async function buscarProdutos(){
+
+    const resultado =
+    document.getElementById("resultado");
+
+    resultado.innerHTML = "";
+
+    // TEXTO DA PESQUISA
+    const pesquisa =
+    document.getElementById("buscar").value
+    .toLowerCase();
+
+    // PRODUTOS AGRÍCOLAS SEM API
+    const produtos = [
+
+        {
+            nome: "Trator Agrícola",
+            descricao: "Máquina agrícola para lavoura.",
+            imagem:
+"https://images.unsplash.com/photo-1592982537447-7440770cbfc9?q=80&w=1200",
+            link:
+"https://www.mercadolivre.com.br/"
+        },
+
+        {
+            nome: "Fertilizante",
+            descricao: "Fertilizante para plantação.",
+            imagem:
+"https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=1200",
+            link:
+"https://www.agrolink.com.br/"
+        },
+
+        {
+            nome: "Sementes de Milho",
+            descricao: "Sementes agrícolas de alta qualidade.",
+            imagem:
+"https://images.unsplash.com/photo-1471193945509-9ad0617afabf?q=80&w=1200",
+            link:
+"https://www.johnsonsementes.com.br/"
+        },
+
+        {
+            nome: "Pulverizador",
+            descricao: "Equipamento para pulverização agrícola.",
+            imagem:
+"https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=1200",
+            link:
+"https://www.olx.com.br/"
+        },
+
+        {
+            nome: "Colheitadeira",
+            descricao: "Máquina agrícola para colheita.",
+            imagem:
+"https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1200",
+            link:
+"https://www.caseih.com/pt-br/brazil"
+        }
+
+    ];
+
+    // FILTRAR PRODUTOS
+    const filtrados = produtos.filter(produto =>
+
+        produto.nome.toLowerCase()
+        .includes(pesquisa)
+
+    );
+
+    // SE NÃO DIGITAR NADA
+    const lista =
+    pesquisa === ""
+    ? produtos
+    : filtrados;
+
+    // NENHUM PRODUTO
+    if(lista.length === 0){
+
+        resultado.innerHTML = `
+
+            <h2 style="color:white;">
+                Nenhum produto encontrado.
+            </h2>
+
+        `;
+
+        return;
+    }
+
+    // MOSTRAR PRODUTOS
+    lista.forEach(produto => {
+
+        resultado.innerHTML += `
+
+        <div class="card">
+
+            <img
+            src="${produto.imagem}"
+            alt="produto">
+
+            <div class="info">
+
+                <h3>
+                    ${produto.nome}
+                </h3>
+
+                <p>
+                    ${produto.descricao}
+                </p>
+
+                <a
+                href="${produto.link}"
+                target="_blank">
+
+                    Comprar Produto
+
+                </a>
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+// CARREGAR AUTOMÁTICO
+buscarProdutos();
+
+</script>
+</body>
+</html>
