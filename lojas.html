@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agro.com/lojas</title>
+    <title>Agro.com/lojas on-line</title>
     <style>
         *{
             margin: 0;
@@ -27,7 +27,7 @@
             padding: 16px; 
             position: absolute;
             width: 100%;
-
+            z-index: 999;
         }
         /*menu*/
         .menu {
@@ -123,13 +123,78 @@ left: 0;
 
     border-radius: 8px;
 }
+.lojas-online{
+    padding: 20px;
+    top: 87px;
+}
+
+.lojas-online h2{
+    color: white;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.produto-online img{
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+    background: white;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.produto-online h3{
+    color: green;
+    margin-top: 10px;
+}
+
+.produto-online p{
+    color: black;
+    margin-top: 10px;
+}
+
+.produto-online a{
+    display: inline-block;
+    margin-top: 10px;
+    background: green;
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+}
+.lojas-online{
+    padding: 20px;
+}
+
+.lojas-online h2{
+    color: white;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.produto-online img{
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.produto-online h3{
+    color: green;
+    margin-top: 10px;
+}
+
+.produto-online p{
+    margin-top: 10px;
+    color: black;
+}
     </style>
 </head>
 <body>
     <!--inicio-->
     <nav class="inicio">
         <div class="tema">
-            <h3>Lojas</h3>
+            <h3>Lojas on-line</h3>
         </div>
         <div class="menu">
             <a href="#">
@@ -160,16 +225,14 @@ left: 0;
             })
         </script>
     </nav>
-    <!-- LOJAS AGRO -->
-<div class="lojas-agro">
+    <br><br>
+   <!-- LOJAS ONLINE -->
+<div class="lojas-online">
 
-    <h2>
-        <i class="bi bi-shop"></i>
-        Lojas Agro Próximas
-    </h2>
+    
 
-    <div id="listaLojas">
-        Procurando lojas perto de você...
+    <div id="listaOnline">
+        Carregando produtos...
     </div>
 
 </div>
@@ -184,119 +247,83 @@ left: 0;
             meio.classList.toggle("abrir");
         });
     </script>
-   <script>
+    <script>
 
-async function buscarLojas(latitude, longitude){
+async function carregarProdutosOnline(){
 
     const lista =
-    document.getElementById("listaLojas");
+    document.getElementById("listaOnline");
 
     lista.innerHTML = `
         <p style="color:white;">
-            Procurando lojas agrícolas perto de você...
+            Carregando lojas agrícolas...
         </p>
-    `;
-
-    // CONSULTA OVERPASS
-    const query = `
-    [out:json][timeout:25];
-
-    (
-      node["shop"="agrarian"](around:15000,${latitude},${longitude});
-      node["shop"="farm"](around:15000,${latitude},${longitude});
-      node["office"="agriculture"](around:15000,${latitude},${longitude});
-      node["amenity"="marketplace"](around:15000,${latitude},${longitude});
-      way["shop"="agrarian"](around:15000,${latitude},${longitude});
-      way["shop"="farm"](around:15000,${latitude},${longitude});
-    );
-
-    out center;
     `;
 
     try{
 
-        const resposta = await fetch(
-            "https://overpass-api.de/api/interpreter",
+        // LOJAS AGRÍCOLAS REAIS
+        const lojas = [
+
             {
-                method: "POST",
-                body: query
+                nome: "John Deere Brasil",
+                descricao: "Máquinas agrícolas, tratores e equipamentos rurais.",
+                imagem: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1200",
+                link: "https://www.johndeere.com.br/"
+            },
+
+            {
+                nome: "STIHL Brasil",
+                descricao: "Ferramentas agrícolas, motosserras e equipamentos.",
+                imagem: "https://images.unsplash.com/photo-1592982537447-6f2a6a0d1f16?q=80&w=1200",
+                link: "https://www.stihl.com.br/"
+            },
+
+            {
+                nome: "Agrolink",
+                descricao: "Produtos agropecuários e soluções agrícolas.",
+                imagem: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=1200",
+                link: "https://www.agrolink.com.br/"
+            },
+
+            {
+                nome: "Casa do Produtor",
+                descricao: "Sementes, fertilizantes e produtos rurais.",
+                imagem: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=1200",
+                link: "https://www.casadoprodutor.com.br/"
+            },
+
+            {
+                nome: "Coopercitrus",
+                descricao: "Cooperativa agrícola com máquinas e insumos.",
+                imagem: "https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?q=80&w=1200",
+                link: "https://www.coopercitrus.com.br/"
             }
-        );
 
-        const dados = await resposta.json();
-
-        console.log(dados);
+        ];
 
         lista.innerHTML = "";
 
-        // SEM RESULTADOS
-        if(!dados.elements || dados.elements.length === 0){
-
-            lista.innerHTML = `
-
-            <div class="loja-card">
-
-                <h3>
-                    Nenhuma loja agrícola encontrada
-                </h3>
-
-                <p>
-                    Tente novamente em outra região.
-                </p>
-
-                <a href="https://www.johndeere.com.br/" target="_blank">
-                    John Deere
-                </a>
-
-                <br><br>
-
-                <a href="https://www.stihl.com.br/" target="_blank">
-                    STIHL Brasil
-                </a>
-
-            </div>
-
-            `;
-
-            return;
-        }
-
-        // MOSTRAR LOJAS
-        dados.elements.forEach(loja => {
-
-            const nome =
-            loja.tags?.name ||
-            "Loja Agrícola";
-
-            const endereco =
-            loja.tags?.["addr:street"] ||
-            "Endereço não informado";
-
-            // PEGAR LATITUDE/LONGITUDE
-            const lat =
-            loja.lat || loja.center?.lat;
-
-            const lon =
-            loja.lon || loja.center?.lon;
-
-            const maps =
-            `https://www.google.com/maps?q=${lat},${lon}`;
+        lojas.forEach(loja => {
 
             lista.innerHTML += `
 
-            <div class="loja-card">
+            <div class="loja-card produto-online">
+
 
                 <h3>
-                    ${nome}
+                    ${loja.nome}
                 </h3>
 
                 <p>
-                    <i class="bi bi-geo-alt"></i>
-                    ${endereco}
+                    ${loja.descricao}
                 </p>
 
-                <a href="${maps}" target="_blank">
-                    Ver no mapa
+                <a 
+                    href="${loja.link}"
+                    target="_blank"
+                >
+                    Visitar Loja
                 </a>
 
             </div>
@@ -313,11 +340,11 @@ async function buscarLojas(latitude, longitude){
         <div class="loja-card">
 
             <h3>
-                Erro ao procurar lojas
+                Erro ao carregar lojas
             </h3>
 
             <p>
-                Verifique sua internet ou tente novamente.
+                Verifique sua internet.
             </p>
 
         </div>
@@ -325,89 +352,9 @@ async function buscarLojas(latitude, longitude){
         `;
     }
 }
-
-
-// PEDIR LOCALIZAÇÃO
-function pedirLocalizacao(){
-
-    const lista =
-    document.getElementById("listaLojas");
-
-    // VERIFICAR GEOLOCALIZAÇÃO
-    if(navigator.geolocation){
-
-        lista.innerHTML = `
-            <p style="color:white;">
-                Pedindo acesso à localização...
-            </p>
-        `;
-
-        navigator.geolocation.getCurrentPosition(
-
-            // SUCESSO
-            function(posicao){
-
-                const latitude =
-                posicao.coords.latitude;
-
-                const longitude =
-                posicao.coords.longitude;
-
-                console.log(latitude, longitude);
-
-                buscarLojas(latitude, longitude);
-            },
-
-            // ERRO
-            function(erro){
-
-                console.log(erro);
-
-                lista.innerHTML = `
-
-                <div class="loja-card">
-
-                    <h3>
-                        Localização negada
-                    </h3>
-
-                    <p>
-                        Permita a localização para procurar lojas agrícolas próximas.
-                    </p>
-
-                </div>
-
-                `;
-            },
-
-            // CONFIGURAÇÕES
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
-            }
-
-        );
-
-    }else{
-
-        lista.innerHTML = `
-
-        <div class="loja-card">
-
-            <h3>
-                Seu navegador não suporta localização
-            </h3>
-
-        </div>
-
-        `;
-    }
-}
-
 
 // INICIAR
-pedirLocalizacao();
+carregarProdutosOnline();
 
 </script>
 </body>
