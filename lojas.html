@@ -25,7 +25,7 @@
             text-align: center;
             color: white;
             padding: 16px; 
-            position: fixed;
+            position: absolute;
             width: 100%;
 
         }
@@ -41,14 +41,15 @@
         }
         /*meio*/
         .meio {
-    background: url(https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1600);
-    margin-top: 53px;
-    width: 230px;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: -230px;
-    transition: 0.4s;
+             margin-top: 53px;
+           background: rgba(0,0,0,0.9);
+            width: 230px;
+            height: 100vh;
+            position: fixed;
+            left: -230px;
+            transition: all 0.4s;
+            border-right: 2px solid lime;
+            z-index: 999;
 }
        
 .meio.abrir{
@@ -67,8 +68,9 @@ left: 0;
     
         
         .meio a:hover{
-         border-left: 3px solid black;
-         transition: 0.4s;
+          border-left: 3px solid lime;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.4s;
         }
         .meio a {
            top: 9px;
@@ -144,12 +146,19 @@ left: 0;
             <span>Home</span>
           </a>
         </div>
-        <div class="cata3">
+        <div class="cata3" id="produto">
             <a href="#">
                 <i class="bi bi-cart"></i>
                 <span>Produtos</span>
             </a>
         </div>
+        <script>
+            const produto =document.getElementById("produto");
+            //função
+            produto.addEventListener("click",function(event){
+                alert("Esse site está com reparos, por favor aguarde a atualização")
+            })
+        </script>
     </nav>
     <!-- LOJAS AGRO -->
 <div class="lojas-agro">
@@ -179,55 +188,67 @@ left: 0;
 
 async function buscarLojas(latitude, longitude){
 
-    const query = `
+    const lista =
+    document.getElementById("listaLojas");
 
-    [out:json];
-
-    (
-      node["shop"](around:8000,${latitude},${longitude});
-      node["shop"="farm"](around:8000,${latitude},${longitude});
-      node["shop"="agrarian"](around:8000,${latitude},${longitude});
-      node["amenity"="marketplace"](around:8000,${latitude},${longitude});
-    );
-
-    out;
-
+    lista.innerHTML = `
+        <p style="color:white;">
+            Procurando lojas agro...
+        </p>
     `;
 
-    const url = "https://overpass-api.de/api/interpreter";
+    const query = `
+    [out:json][timeout:25];
+
+    (
+      node["shop"="agrarian"](around:10000,${latitude},${longitude});
+      node["shop"="farm"](around:10000,${latitude},${longitude});
+      node["office"="agriculture"](around:10000,${latitude},${longitude});
+      node["amenity"="marketplace"](around:10000,${latitude},${longitude});
+    );
+
+    out body;
+    `;
 
     try{
 
-        const resposta = await fetch(url,{
-            method:"POST",
-            body: query
-        });
+        const resposta = await fetch(
+            "https://overpass-api.de/api/interpreter",
+            {
+                method: "POST",
+                body: query
+            }
+        );
 
         const dados = await resposta.json();
 
-        const lista = document.getElementById("listaLojas");
+        console.log(dados);
 
         lista.innerHTML = "";
 
-        // SE NÃO ENCONTRAR LOJAS
-        if(dados.elements.length === 0){
+        // SE NÃO TIVER RESULTADOS
+        if(!dados.elements || dados.elements.length === 0){
 
             lista.innerHTML = `
 
             <div class="loja-card">
 
                 <h3>
-                    Nenhuma loja agro encontrada perto de você
+                    Nenhuma loja agro encontrada
                 </h3>
 
                 <p>
-                    Veja sites confiáveis de produtos agrícolas:
+                    Veja sites agrícolas:
                 </p>
-
-                <br>
 
                 <a href="https://www.johndeere.com.br/" target="_blank">
                     John Deere
+                </a>
+
+                <br><br>
+
+                <a href="https://www.stihl.com.br/" target="_blank">
+                    STIHL
                 </a>
 
                 <br><br>
@@ -236,37 +257,24 @@ async function buscarLojas(latitude, longitude){
                     Agrolink
                 </a>
 
-                <br><br>
-
-                <a href="https://www.stihl.com.br/" target="_blank">
-                    STIHL Brasil
-                </a>
-
-                <br><br>
-
-                <a href="https://www.magazineluiza.com.br/busca/agro/" target="_blank">
-                    Produtos Agro Magalu
-                </a>
-
             </div>
-
             `;
 
             return;
         }
 
         // MOSTRAR LOJAS
-        dados.elements.slice(0,10).forEach(loja => {
+        dados.elements.forEach(loja => {
 
-            const nome = loja.tags.name || "Loja Agro";
+            const nome =
+            loja.tags.name || "Loja Agrícola";
 
-            const rua =
-                loja.tags["addr:street"] ||
-                "Endereço não informado";
+            const endereco =
+            loja.tags["addr:street"] ||
+            "Endereço não informado";
 
-            const maps = `
-            https://www.google.com/maps?q=${loja.lat},${loja.lon}
-            `;
+            const maps =
+            `https://www.google.com/maps?q=${loja.lat},${loja.lon}`;
 
             lista.innerHTML += `
 
@@ -275,8 +283,7 @@ async function buscarLojas(latitude, longitude){
                 <h3>${nome}</h3>
 
                 <p>
-                    <i class="bi bi-geo-alt"></i>
-                    ${rua}
+                    ${endereco}
                 </p>
 
                 <a href="${maps}" target="_blank">
@@ -286,45 +293,32 @@ async function buscarLojas(latitude, longitude){
             </div>
 
             `;
-
         });
 
     }catch(error){
 
-        document.getElementById("listaLojas").innerHTML = `
+        console.log(error);
+
+        lista.innerHTML = `
 
         <div class="loja-card">
 
             <h3>
-                Não foi possível buscar lojas.
+                Erro ao buscar lojas
             </h3>
 
             <p>
-                Veja alguns sites de agronegócio:
+                Tente novamente mais tarde.
             </p>
-
-            <br>
-
-            <a href="https://www.johndeere.com.br/" target="_blank">
-                John Deere
-            </a>
-
-            <br><br>
-
-            <a href="https://www.agrolink.com.br/" target="_blank">
-                Agrolink
-            </a>
 
         </div>
 
         `;
-
     }
-
 }
 
 
-// PEDIR LOCALIZAÇÃO
+// GEOLOCALIZAÇÃO
 function pedirLocalizacao(){
 
     if(navigator.geolocation){
@@ -333,10 +327,10 @@ function pedirLocalizacao(){
 
             function(posicao){
 
-                const latitude = posicao.coords.latitude;
-                const longitude = posicao.coords.longitude;
-
-                buscarLojas(latitude, longitude);
+                buscarLojas(
+                    posicao.coords.latitude,
+                    posicao.coords.longitude
+                );
 
             },
 
@@ -350,14 +344,9 @@ function pedirLocalizacao(){
                         Localização negada
                     </h3>
 
-                    <p>
-                        Ative a localização para procurar lojas perto de você.
-                    </p>
-
                 </div>
 
                 `;
-
             }
 
         );
@@ -369,18 +358,15 @@ function pedirLocalizacao(){
         <div class="loja-card">
 
             <h3>
-                Geolocalização não suportada
+                Navegador sem geolocalização
             </h3>
 
         </div>
 
         `;
-
     }
-
 }
 
-// iniciar
 pedirLocalizacao();
 
 </script>

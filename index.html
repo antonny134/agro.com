@@ -49,8 +49,7 @@
         .meio {
     margin-top: 53px;
 
-    background-image: url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1600");
-
+      background: rgba(0,0,0,0.9);
     width: 230px;
     height: 100vh;
 
@@ -65,7 +64,7 @@
 
     background-size: cover;
     background-position: center;
-    border-right: 2px solid black;
+    border-right: 2px solid lime;
 }
        
 .meio.abrir{
@@ -84,8 +83,9 @@ left: 0;
     
         
         .meio a:hover{
-         border-left: 3px solid black;
-         transition: 0.4s;
+         border-left: 3px solid lime;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.2s;
         }
         .meio a {
            top: 9px;
@@ -461,12 +461,19 @@ img{
             <span>Lojas</span>
           </a>
         </div>
-        <div class="cata3">
+        <div class="cata3" id="produto">
             <a href="#">
                 <i class="bi bi-cart"></i>
                 <span>Produtos</span>
             </a>
         </div>
+        <script>
+            const produto =document.getElementById("produto");
+            //função
+            produto.addEventListener("click",function(event){
+                alert("Esse site está com reparos, por favor aguarde a atualização")
+            })
+        </script>
     </nav>
     <!--carrocel-->
     
@@ -894,11 +901,12 @@ carregarNoticiasAgro();
 setInterval(carregarNoticiasAgro, 1800000);
 
 </script>
-<script>
+   <script>
 
 async function carregarVideosAgro(){
 
-    const box = document.getElementById("videosAgro");
+    const box =
+    document.getElementById("videosAgro");
 
     box.innerHTML = `
         <p style="color:white;">
@@ -906,43 +914,81 @@ async function carregarVideosAgro(){
         </p>
     `;
 
-    try{
+    // PESQUISA
+    const pesquisa =
+    "agronegocio brasil agricultura noticias";
 
-        // SUA API KEY
-        const API_KEY = "AIzaSyBzITHXZCpM_osI2Nb47qVTC2DwV3D1ocM";
+    // API
+    const url =
+`https://youtube138.p.rapidapi.com/search/?q=${encodeURIComponent(pesquisa)}&hl=pt&gl=BR`;
 
-        // PESQUISA
-        const pesquisa = "agronegocio brasil agricultura";
+    const options = {
 
-        // API YOUTUBE
-        const url = `
-https://www.googleapis.com/youtube/v3/search?part=snippet&q=${pesquisa}&maxResults=6&type=video&order=date&key=${API_KEY}
-        `;
+        method: 'GET',
 
-        const resposta = await fetch(url);
+        headers: {
 
-        const dados = await resposta.json();
+            'x-rapidapi-key':
+            '169e819b60msh6ff7d6d3f98a3f5p19759bjsn0387cf82fc8b',
+
+            'x-rapidapi-host':
+            'youtube138.p.rapidapi.com'
+        }
+    };
+
+    try {
+
+        const response =
+        await fetch(url, options);
+
+        const result =
+        await response.json();
+
+        console.log(result);
 
         box.innerHTML = "";
 
-        dados.items.forEach(video => {
+        // PEGAR SOMENTE VIDEOS
+        const videos = result.contents.filter(item =>
 
-            const titulo = video.snippet.title;
+            item.type === "video"
 
-            const descricao =
-            video.snippet.description;
+        );
+
+        if(videos.length === 0){
+
+            box.innerHTML = `
+                <p style="color:red;">
+                    Nenhum vídeo encontrado.
+                </p>
+            `;
+
+            return;
+        }
+
+        // MOSTRAR VIDEOS
+        videos.slice(0,6).forEach(item => {
+
+            const video =
+            item.video;
+
+            const titulo =
+            video.title;
 
             const videoId =
-            video.id.videoId;
+            video.videoId;
+
+            const canal =
+            video.author.title;
 
             const imagem =
-            video.snippet.thumbnails.high.url;
+            video.thumbnails[0].url;
 
             box.innerHTML += `
 
             <div class="video-card">
 
-                <img 
+                <img
                 src="${imagem}"
                 style="
                     width:100%;
@@ -956,12 +1002,11 @@ https://www.googleapis.com/youtube/v3/search?part=snippet&q=${pesquisa}&maxResul
                 </h3>
 
                 <p>
-                    ${descricao}
+                    Canal: ${canal}
                 </p>
 
-                <a href="
-https://www.youtube.com/watch?v=${videoId}
-                "
+                <a
+                href="https://www.youtube.com/watch?v=${videoId}"
                 target="_blank"
                 style="
                     display:inline-block;
@@ -981,25 +1026,20 @@ https://www.youtube.com/watch?v=${videoId}
 
         });
 
-    }catch(error){
+    } catch (error) {
+
+        console.log(error);
 
         box.innerHTML = `
             <p style="color:red;">
                 Erro ao carregar vídeos.
             </p>
         `;
-
-        console.log(error);
-
     }
-
 }
 
 // INICIAR
 carregarVideosAgro();
-
-// ATUALIZA TODO DIA
-setInterval(carregarVideosAgro, 86400000);
 
 </script>
 </body>
