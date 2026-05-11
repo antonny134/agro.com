@@ -184,7 +184,7 @@ left: 0;
             meio.classList.toggle("abrir");
         });
     </script>
-    <script>
+   <script>
 
 async function buscarLojas(latitude, longitude){
 
@@ -193,21 +193,24 @@ async function buscarLojas(latitude, longitude){
 
     lista.innerHTML = `
         <p style="color:white;">
-            Procurando lojas agro...
+            Procurando lojas agrícolas perto de você...
         </p>
     `;
 
+    // CONSULTA OVERPASS
     const query = `
     [out:json][timeout:25];
 
     (
-      node["shop"="agrarian"](around:10000,${latitude},${longitude});
-      node["shop"="farm"](around:10000,${latitude},${longitude});
-      node["office"="agriculture"](around:10000,${latitude},${longitude});
-      node["amenity"="marketplace"](around:10000,${latitude},${longitude});
+      node["shop"="agrarian"](around:15000,${latitude},${longitude});
+      node["shop"="farm"](around:15000,${latitude},${longitude});
+      node["office"="agriculture"](around:15000,${latitude},${longitude});
+      node["amenity"="marketplace"](around:15000,${latitude},${longitude});
+      way["shop"="agrarian"](around:15000,${latitude},${longitude});
+      way["shop"="farm"](around:15000,${latitude},${longitude});
     );
 
-    out body;
+    out center;
     `;
 
     try{
@@ -226,7 +229,7 @@ async function buscarLojas(latitude, longitude){
 
         lista.innerHTML = "";
 
-        // SE NÃO TIVER RESULTADOS
+        // SEM RESULTADOS
         if(!dados.elements || dados.elements.length === 0){
 
             lista.innerHTML = `
@@ -234,11 +237,11 @@ async function buscarLojas(latitude, longitude){
             <div class="loja-card">
 
                 <h3>
-                    Nenhuma loja agro encontrada
+                    Nenhuma loja agrícola encontrada
                 </h3>
 
                 <p>
-                    Veja sites agrícolas:
+                    Tente novamente em outra região.
                 </p>
 
                 <a href="https://www.johndeere.com.br/" target="_blank">
@@ -248,16 +251,11 @@ async function buscarLojas(latitude, longitude){
                 <br><br>
 
                 <a href="https://www.stihl.com.br/" target="_blank">
-                    STIHL
-                </a>
-
-                <br><br>
-
-                <a href="https://www.agrolink.com.br/" target="_blank">
-                    Agrolink
+                    STIHL Brasil
                 </a>
 
             </div>
+
             `;
 
             return;
@@ -267,22 +265,33 @@ async function buscarLojas(latitude, longitude){
         dados.elements.forEach(loja => {
 
             const nome =
-            loja.tags.name || "Loja Agrícola";
+            loja.tags?.name ||
+            "Loja Agrícola";
 
             const endereco =
-            loja.tags["addr:street"] ||
+            loja.tags?.["addr:street"] ||
             "Endereço não informado";
 
+            // PEGAR LATITUDE/LONGITUDE
+            const lat =
+            loja.lat || loja.center?.lat;
+
+            const lon =
+            loja.lon || loja.center?.lon;
+
             const maps =
-            `https://www.google.com/maps?q=${loja.lat},${loja.lon}`;
+            `https://www.google.com/maps?q=${lat},${lon}`;
 
             lista.innerHTML += `
 
             <div class="loja-card">
 
-                <h3>${nome}</h3>
+                <h3>
+                    ${nome}
+                </h3>
 
                 <p>
+                    <i class="bi bi-geo-alt"></i>
                     ${endereco}
                 </p>
 
@@ -304,11 +313,11 @@ async function buscarLojas(latitude, longitude){
         <div class="loja-card">
 
             <h3>
-                Erro ao buscar lojas
+                Erro ao procurar lojas
             </h3>
 
             <p>
-                Tente novamente mais tarde.
+                Verifique sua internet ou tente novamente.
             </p>
 
         </div>
@@ -318,25 +327,43 @@ async function buscarLojas(latitude, longitude){
 }
 
 
-// GEOLOCALIZAÇÃO
+// PEDIR LOCALIZAÇÃO
 function pedirLocalizacao(){
 
+    const lista =
+    document.getElementById("listaLojas");
+
+    // VERIFICAR GEOLOCALIZAÇÃO
     if(navigator.geolocation){
+
+        lista.innerHTML = `
+            <p style="color:white;">
+                Pedindo acesso à localização...
+            </p>
+        `;
 
         navigator.geolocation.getCurrentPosition(
 
+            // SUCESSO
             function(posicao){
 
-                buscarLojas(
-                    posicao.coords.latitude,
-                    posicao.coords.longitude
-                );
+                const latitude =
+                posicao.coords.latitude;
 
+                const longitude =
+                posicao.coords.longitude;
+
+                console.log(latitude, longitude);
+
+                buscarLojas(latitude, longitude);
             },
 
-            function(){
+            // ERRO
+            function(erro){
 
-                document.getElementById("listaLojas").innerHTML = `
+                console.log(erro);
+
+                lista.innerHTML = `
 
                 <div class="loja-card">
 
@@ -344,21 +371,32 @@ function pedirLocalizacao(){
                         Localização negada
                     </h3>
 
+                    <p>
+                        Permita a localização para procurar lojas agrícolas próximas.
+                    </p>
+
                 </div>
 
                 `;
+            },
+
+            // CONFIGURAÇÕES
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
             }
 
         );
 
     }else{
 
-        document.getElementById("listaLojas").innerHTML = `
+        lista.innerHTML = `
 
         <div class="loja-card">
 
             <h3>
-                Navegador sem geolocalização
+                Seu navegador não suporta localização
             </h3>
 
         </div>
@@ -367,6 +405,8 @@ function pedirLocalizacao(){
     }
 }
 
+
+// INICIAR
 pedirLocalizacao();
 
 </script>
