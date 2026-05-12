@@ -1,263 +1,454 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agro.com/agro.ia</title>
+    <title>Agro.com / Agro.ia</title>
     <style>
-        *{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Courier New', Courier, monospace;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Courier New', Courier, monospace; }
+
+        body {
+            background-image: url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1600");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
-          body{
-    background-image: url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1600");
-    
-    background-size: cover;
-    background-position: center;;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-}   
-        .inicio{
+
+        .inicio {
             background: green;
             padding: 15px;
             text-align: center;
             color: white;
+            position: relative;
         }
-        .menu{
-            position: absolute;
-            top: 15px;
+        .menu { position: absolute; top: 15px; left: 15px; }
+        .menu a { font-size: 22px; color: white; text-decoration: none; }
+        .badge-nn {
+            background: rgba(0,150,0,0.85);
+            color: white; font-size: 12px;
+            padding: 3px 12px; border-radius: 20px;
+            display: inline-block; margin-top: 4px;
         }
-        .menu a{
-            font-size: 18px;
-            color: white;
-        }
-        .catalogo{
-            background:  rgba(0,0,0,0.9);
-            width: 230px;
-            height: 100vh;
-            position: fixed;
-            left: -230px;
-            transition: all 0.4s;
-            z-index: 999;
-        }
-        .excluir{
-            left:0px;
-        }
-        /*catalogo*/
-        .catalogo a{
-           margin-top: 5px;
-           margin-left: 5px;
-            display: block;
-            color: white;
-            font-size: 18px;
-            text-decoration: none;
-            padding: 15px;
-        }
-        .catalogo a:hover{
-             border-left: 3px solid lime;
-             transition: all 0.3s;
-            background: rgba(255,255,255,0.1);
-        }
-        .catalogo:hover{
-            border-right: 3px solid lime;
-            transition: all 0.2s;
-        }
-      
-    .ia{
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
 
-    .input{
-        width: 90%;
-        max-width: 500px;
-    }
+        .catalogo {
+            background: rgba(0,0,0,0.92);
+            width: 230px; height: 100vh;
+            position: fixed; left: -230px;
+            transition: all 0.4s; z-index: 999;
+        }
+        .excluir { left: 0; }
+        .catalogo a {
+            display: block; color: white; font-size: 18px;
+            text-decoration: none; padding: 15px 15px 15px 20px;
+            margin-top: 4px;
+        }
+        .catalogo a:hover { border-left: 3px solid lime; background: rgba(255,255,255,0.08); transition: all 0.2s; }
+        .catalogo:hover { border-right: 3px solid lime; transition: all 0.2s; }
 
-    .escrever{
-        width: 100%;
-        padding: 15px;
-        border-radius: 30px;
-        border: none;
-        outline: none;
-        font-size: 18px;
-        background: rgba(255,255,255,0.9);
-        box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
-    }
-    .escrever:hover{
-        border:  3px solid black;
-    }
-    
-.chat{
-    width: 90%;
-    max-width: 700px;
-    margin: 20px auto;
-    padding-bottom: 120px;
-}
+        .chat {
+            width: 90%; max-width: 700px;
+            margin: 20px auto; padding-bottom: 130px;
+        }
+        .mensagem-user {
+            background: limegreen; color: white;
+            padding: 12px 16px; border-radius: 18px 18px 4px 18px;
+            margin-top: 12px; text-align: right;
+            animation: fadeIn 0.3s;
+        }
+        .mensagem-ia {
+            background: rgba(0,0,0,0.85); color: white;
+            padding: 14px 16px; border-radius: 18px 18px 18px 4px;
+            margin-top: 12px; line-height: 1.8;
+            animation: fadeIn 0.3s;
+        }
+        .mensagem-ia .tag {
+            font-size: 11px; color: limegreen;
+            display: block; margin-bottom: 6px;
+        }
+        .loader {
+            background: rgba(0,0,0,0.7); color: #bbb;
+            padding: 12px 16px; border-radius: 18px;
+            margin-top: 12px; font-style: italic;
+        }
+        .dica-box {
+            background: rgba(0,60,0,0.8); border-radius: 12px;
+            padding: 16px; color: white; font-size: 13px;
+            margin-top: 14px; line-height: 2;
+        }
+        .dica-box strong { color: limegreen; }
 
-.mensagem-user{
-    background: limegreen;
-    color: white;
-    padding: 12px;
-    border-radius: 15px;
-    margin-top: 10px;
-    text-align: right;
-}
+        .ia {
+            position: fixed; bottom: 20px;
+            left: 50%; transform: translateX(-50%);
+            width: 100%; display: flex; justify-content: center; z-index: 10;
+        }
+        .input-wrapper {
+            width: 90%; max-width: 600px;
+            display: flex; gap: 8px; align-items: center;
+        }
+        .escrever {
+            flex: 1; padding: 15px 20px; border-radius: 30px;
+            border: none; outline: none; font-size: 16px;
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 0 15px rgba(0,0,0,0.4);
+        }
+        .escrever:hover { border: 2px solid limegreen; }
+        .escrever:focus { border: 2px solid green; }
+        .btn-send {
+            background: limegreen; border: none; border-radius: 50%;
+            width: 52px; height: 52px; font-size: 20px; color: white;
+            cursor: pointer; box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            transition: background 0.2s;
+        }
+        .btn-send:hover { background: darkgreen; }
 
-.mensagem-ia{
-    background: rgba(0,0,0,0.8);
-    color: white;
-    padding: 12px;
-    border-radius: 15px;
-    margin-top: 10px;
-}
+        @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
     </style>
 </head>
 <body>
-   <!--inicio-->
-   <nav class="inicio">
-    <h3>Agro.ia</h3>
+
+<nav class="inicio">
     <div class="menu" id="menu">
-        <a href="#">
-            <i class="bi bi-list"></i>
-        </a>
+        <a href="#"><i class="bi bi-list"></i></a>
     </div>
-   </nav> 
-   <!--catalogo-->
-   <nav class="catalogo" id="catalogo">
-    <!--home-->
-    <a href="index.html">
-        <i class="bi bi-house"></i>
-        <span>Home</span>
-    </a>
-    <!--lojas-->
-    <a href="lojas.html">
-        <i class="bi bi-shop"></i>
-        <span>Lojas on-line</span>
-    </a>
-    <!--produtos-->
-    <a href="produtos.html">
-        <i class="bi bi-cart"></i>
-        <span>Produtos</span>
-    </a>
-   </nav>
-   <!--fazer a ia-->
-   <nav class="ia">
-    <!--o que eu vou escrever-->
-    <div class="input">
-        <input type="text" class="escrever" id="escrever">
+    <h3>🌱 Agro.ia</h3>
+    <span class="badge-nn" id="badge-nn">🧠 IA Local: treinando...</span>
+</nav>
+
+<nav class="catalogo" id="catalogo">
+    <a href="index.html"><i class="bi bi-house"></i> <span>Home</span></a>
+    <a href="lojas.html"><i class="bi bi-shop"></i> <span>Lojas on-line</span></a>
+    <a href="produtos.html"><i class="bi bi-cart"></i> <span>Produtos</span></a>
+</nav>
+
+<div class="chat" id="chat">
+    <div class="dica-box">
+        <strong>🤖 Agro.ia — IA 100% Local (sem internet)</strong><br>
+        • Pergunte sobre <strong>irrigação, pragas, solos, plantio, adubação</strong> e mais<br>
+        • Análise de solo com rede neural:<br>
+        &nbsp;&nbsp;Digite <strong>solo [umidade 0-10] [temperatura 0-10]</strong><br>
+        &nbsp;&nbsp;Exemplo: <em>solo 2 9</em> &nbsp;→&nbsp; análise completa 🌱
     </div>
-   </nav>
-   <!-- mensagens da IA -->
-   <div class="chat" id="chat"></div>
-   <!--script-->
-   <script>
-const menu = document.getElementById("menu");
-const catalogo = document.getElementById("catalogo");
-const escrever = document.getElementById("escrever");
-const chat = document.getElementById("chat");
+</div>
 
-// menu lateral
-menu.addEventListener("click", function () {
+<nav class="ia">
+    <div class="input-wrapper">
+        <input type="text" class="escrever" id="escrever" placeholder="Pergunte sobre agricultura...">
+        <button class="btn-send" id="btn-send"><i class="bi bi-send-fill"></i></button>
+    </div>
+</nav>
 
-    catalogo.classList.toggle("excluir");
+<script>
+// ============================================================
+//  🧠 REDE NEURAL AGRÍCOLA — Previsão de Irrigação
+// ============================================================
 
-});
+const _sig  = x => 1 / (1 + Math.exp(-x));
+const _sigD = x => x * (1 - x);
+const _rnd  = (r, c) => Array.from({length:r}, () => Array.from({length:c}, () => Math.random()*2-1));
+const _mm   = (a, b) => a.map(row => b[0].map((_, j) => row.reduce((s, v, k) => s + v * b[k][j], 0)));
+const _add  = (a, b) => a.map((r,i) => r.map((v,j) => v + b[i][j]));
+const _sub  = (a, b) => a.map((r,i) => r.map((v,j) => v - b[i][j]));
+const _mul  = (a, b) => a.map((r,i) => r.map((v,j) => v * b[i][j]));
+const _ap   = (a, fn) => a.map(r => r.map(fn));
+const _t    = m => m[0].map((_,j) => m.map(r => r[j]));
+const _sc   = (m, s) => m.map(r => r.map(v => v * s));
 
-// função da IA
-async function enviarMensagem() {
+const nnInputs  = [
+    [.1,.9],[.2,.8],[.15,.85],[.3,.9],[.1,.7],[.2,.7],[.05,.95],[.25,.85],
+    [.9,.1],[.8,.2],[.85,.15],[.7,.1],[.9,.3],[.8,.3],[.95,.05],[.75,.15],
+    [.5,.5],[.4,.6],[.6,.4],[.3,.6],[.7,.4],[.45,.55],[.55,.45]
+];
+const nnTargets = [
+    [1],[1],[1],[1],[1],[1],[1],[1],
+    [0],[0],[0],[0],[0],[0],[0],[0],
+    [.5],[.65],[.35],[.7],[.3],[.55],[.45]
+];
 
-    const mensagem = escrever.value;
+const wIn  = nnInputs.map(r => [r]);
+const wTgt = nnTargets.map(r => [r]);
 
-    if(mensagem === "") return;
+let W1=_rnd(2,8), B1=_rnd(1,8);
+let W2=_rnd(8,5), B2=_rnd(1,5);
+let W3=_rnd(5,1), B3=_rnd(1,1);
+const LR=0.4, EP=12000;
 
-    // mostrar mensagem do usuário
-    chat.innerHTML += `
-        <div class="mensagem-user">
-            ${mensagem}
-        </div>
-    `;
-
-    escrever.value = "";
-
-    const url = 'https://chatgpt-42.p.rapidapi.com/conversationgpt4-2';
-
-    const options = {
-        method: 'POST',
-
-        headers: {
-            'x-rapidapi-key': '169e819b60msh6ff7d6d3f98a3f5p19759bjsn0387cf82fc8b',
-            'x-rapidapi-host': 'chatgpt-42.p.rapidapi.com',
-            'Content-Type': 'application/json'
-        },
-
-        body: JSON.stringify({
-
-            messages: [
-                {
-                    role: 'user',
-                    content: mensagem
-                }
-            ],
-
-            system_prompt: '',
-            temperature: 0.9,
-            top_k: 5,
-            top_p: 0.9,
-            max_tokens: 256,
-            web_access: false
-
-        })
-    };
-
-    try {
-
-        const response = await fetch(url, options);
-
-        const result = await response.json();
-
-        console.log(result);
-
-        // mostrar resposta da IA
-        chat.innerHTML += `
-            <div class="mensagem-ia">
-                ${result.result}
-            </div>
-        `;
-
-        // descer automático
-        window.scrollTo(0, document.body.scrollHeight);
-
-    } catch (error) {
-
-        console.error(error);
-
-        chat.innerHTML += `
-            <div class="mensagem-ia">
-                Erro ao conectar com a IA
-            </div>
-        `;
-    }
+function treinar() {
+    return new Promise(res => setTimeout(() => {
+        for (let e = 0; e < EP; e++) {
+            for (let i = 0; i < wIn.length; i++) {
+                const x=wIn[i], y=wTgt[i];
+                const a1=_ap(_add(_mm(x,W1),B1),_sig);
+                const a2=_ap(_add(_mm(a1,W2),B2),_sig);
+                const a3=_ap(_add(_mm(a2,W3),B3),_sig);
+                const e3=_sub(a3,y);
+                const dZ3=_mul([[e3[0][0]*2]],_ap(a3,_sigD));
+                W3=_sub(W3,_sc(_mm(_t(a2),dZ3),LR));
+                B3=_sub(B3,_sc(dZ3,LR));
+                const dA2=_mm(dZ3,_t(W3));
+                const dZ2=_mul(dA2,_ap(a2,_sigD));
+                W2=_sub(W2,_sc(_mm(_t(a1),dZ2),LR));
+                B2=_sub(B2,_sc(dZ2,LR));
+                const dA1=_mm(dZ2,_t(W2));
+                const dZ1=_mul(dA1,_ap(a1,_sigD));
+                W1=_sub(W1,_sc(_mm(_t(x),dZ1),LR));
+                B1=_sub(B1,_sc(dZ1,LR));
+            }
+        }
+        res();
+    }, 30));
 }
 
-// enviar apertando ENTER
-escrever.addEventListener("keypress", function(event){
+function prever(umidade, temp) {
+    const x = [[ umidade/10, temp/10 ]];
+    const a1=_ap(_add(_mm([x[0]],W1),B1),_sig);
+    const a2=_ap(_add(_mm(a1,W2),B2),_sig);
+    const a3=_ap(_add(_mm(a2,W3),B3),_sig);
+    return a3[0][0];
+}
 
-    if(event.key === "Enter"){
+treinar().then(() => {
+    document.getElementById("badge-nn").textContent = "🧠 IA Local: pronta ✅";
+});
 
-        enviarMensagem();
+// ============================================================
+//  🌾 BASE DE CONHECIMENTO AGRÍCOLA
+// ============================================================
 
+const conhecimento = [
+    {
+        chaves: ["irrigação","irrigar","regar","água","molhar"],
+        resposta: `💧 <b>Irrigação Agrícola</b><br>
+        • <b>Gotejamento:</b> Ideal para frutas e hortaliças — econômiza até 50% de água<br>
+        • <b>Aspersão:</b> Boa para grãos e pastagens<br>
+        • <b>Sulco:</b> Tradicional, usado em cana-de-açúcar e milho<br><br>
+        💡 <b>Dica:</b> Use o comando <b>solo [umidade] [temperatura]</b> para a IA analisar se seu solo precisa de água!`
+    },
+    {
+        chaves: ["praga","inseto","lagarta","pulgão","mosca","percevejo","besouro","broca"],
+        resposta: `🐛 <b>Controle de Pragas</b><br>
+        • <b>MIP (Manejo Integrado):</b> Monitore antes de aplicar defensivos<br>
+        • <b>Controle biológico:</b> Trichogramma, Bacillus thuringiensis, predadores naturais<br>
+        • <b>Armadilhas:</b> Feromônios para monitoramento<br>
+        • <b>Rotação de culturas:</b> Quebra o ciclo de pragas<br><br>
+        ⚠️ Sempre consulte um agrônomo antes de aplicar agrotóxicos.`
+    },
+    {
+        chaves: ["doença","fungo","ferrugem","mancha","podridão","míldio","antracnose"],
+        resposta: `🍂 <b>Doenças nas Plantas</b><br>
+        • <b>Fungos:</b> Aplique fungicidas preventivos em épocas úmidas<br>
+        • <b>Ferrugem:</b> Comum em soja e café — use variedades resistentes<br>
+        • <b>Bacterioses:</b> Evite ferimentos e use sementes certificadas<br>
+        • <b>Prevenção:</b> Boa ventilação, espaçamento adequado e rotação de cultura<br><br>
+        🌿 O diagnóstico correto é fundamental — consulte um fitopatologista.`
+    },
+    {
+        chaves: ["solo","terra","adubo","fertilizante","npk","calcário","ph","nutriente"],
+        resposta: `🌍 <b>Solos e Nutrição</b><br>
+        • <b>pH ideal:</b> 6.0 a 6.5 para maioria das culturas<br>
+        • <b>Calagem:</b> Corrija o pH com calcário antes do plantio<br>
+        • <b>NPK:</b> N (crescimento), P (raízes), K (resistência e frutos)<br>
+        • <b>Matéria orgânica:</b> Compostagem melhora estrutura e retenção de água<br><br>
+        💡 Use o comando <b>solo [umidade 0-10] [temperatura 0-10]</b> para análise de irrigação!`
+    },
+    {
+        chaves: ["plantio","semear","semente","cultivar","mudas","época","plantar"],
+        resposta: `🌱 <b>Plantio e Semeadura</b><br>
+        • <b>Época:</b> Respeite o zoneamento agrícola da sua região<br>
+        • <b>Espaçamento:</b> Varia por cultura — consulte a embalagem da semente<br>
+        • <b>Profundidade:</b> Sementes pequenas: 1-2cm | Grandes: 3-5cm<br>
+        • <b>Qualidade:</b> Use sementes certificadas com boa germinação<br>
+        • <b>Preparo do solo:</b> Aração + gradagem + calagem (30 dias antes)`
+    },
+    {
+        chaves: ["colheita","colher","produção","safra","produtividade","rendimento"],
+        resposta: `🌾 <b>Colheita e Produtividade</b><br>
+        • <b>Ponto de colheita:</b> Observe cor, tamanho e teor de umidade do grão<br>
+        • <b>Mecanização:</b> Colhedoras reduzem perdas e custos<br>
+        • <b>Armazenamento:</b> Grãos devem ter ≤13% de umidade para armazenar<br>
+        • <b>Pós-colheita:</b> Seque, limpe e armazene em local ventilado e seco<br><br>
+        📊 Produtividade depende: genética + ambiente + manejo`
+    },
+    {
+        chaves: ["soja","milho","trigo","arroz","feijão","café","cana","algodão","mandioca"],
+        resposta: `🌿 <b>Principais Culturas do Brasil</b><br>
+        • 🟡 <b>Soja:</b> Maior exportação — ciclo 100-130 dias<br>
+        • 🌽 <b>Milho:</b> Safrinha de março ganha espaço<br>
+        • ☕ <b>Café:</b> Brasil é maior produtor mundial<br>
+        • 🍬 <b>Cana:</b> Etanol e açúcar — colheita mecanizada<br>
+        • 🌾 <b>Trigo:</b> Sul do Brasil — inverno<br><br>
+        Qual cultura você quer saber mais? Pergunte!`
+    },
+    {
+        chaves: ["clima","chuva","seca","temperatura","geada","vento","previsão"],
+        resposta: `🌤️ <b>Clima e Agricultura</b><br>
+        • <b>Seca:</b> Irrigação de salvação + cobertura do solo<br>
+        • <b>Geada:</b> Plantio tardio, quebra-ventos, irrigação noturna preventiva<br>
+        • <b>Excesso de chuva:</b> Drenagem, canteiros elevados<br>
+        • <b>Apps úteis:</b> Agritempo (Embrapa), Climatempo Agro, INMET<br><br>
+        🌡️ Use <b>solo [umidade] [temperatura]</b> para análise de irrigação.`
+    },
+    {
+        chaves: ["adubo","composto","húmus","esterco","orgânico","biofertilizante"],
+        resposta: `♻️ <b>Adubação Orgânica</b><br>
+        • <b>Esterco bovino:</b> Rico em N, P, K — cure por 60 dias antes de usar<br>
+        • <b>Compostagem:</b> Restos vegetais + esterco — leva 60-90 dias<br>
+        • <b>Húmus de minhoca:</b> Alta qualidade biológica e química<br>
+        • <b>Biofertilizante:</b> Fermentado líquido foliar ou solo<br><br>
+        🌱 Adubação verde: Crotalária, Brachiaria e Nabo forrageiro melhoram o solo!`
+    },
+    {
+        chaves: ["agronegócio","mercado","preço","exportação","cotação","commodity"],
+        resposta: `📈 <b>Agronegócio Brasileiro</b><br>
+        • Brasil é TOP 3 exportador: soja, carne, café, açúcar<br>
+        • Agro representa ~27% do PIB nacional<br>
+        • <b>Cotações:</b> CEPEA/Esalq, B3, Chicago (CBOT)<br>
+        • <b>Tendências:</b> Agricultura de precisão, rastreabilidade, ESG<br><br>
+        💹 Diversificação de culturas reduz risco de preço!`
+    },
+    {
+        chaves: ["olá","oi","bom dia","boa tarde","boa noite","hey","hello","tudo bem"],
+        resposta: `👋 <b>Olá! Bem-vindo à Agro.ia!</b><br>
+        Sou sua inteligência artificial agrícola, criada para ajudar com:<br>
+        🌱 Plantio e cultivo &nbsp;|&nbsp; 💧 Irrigação &nbsp;|&nbsp; 🐛 Pragas<br>
+        🌍 Solos e adubação &nbsp;|&nbsp; 🌾 Colheita &nbsp;|&nbsp; ☁️ Clima<br><br>
+        Pergunte qualquer coisa sobre agricultura! 🚜`
+    },
+    {
+        chaves: ["obrigado","obrigada","valeu","grato","agradeço"],
+        resposta: `😊 <b>Fico feliz em ajudar!</b><br>
+        Qualquer dúvida sobre agricultura, estou aqui! 🌱<br>
+        Use <b>solo [umidade] [temperatura]</b> para analisar a necessidade de irrigação da sua lavoura.`
+    },
+    {
+        chaves: ["ajuda","comandos","o que você faz","como usar","funciona"],
+        resposta: `🤖 <b>Comandos da Agro.ia:</b><br>
+        • <b>Pergunte livremente</b> sobre agricultura<br>
+        • <b>solo 3 8</b> → Análise de irrigação pela rede neural<br><br>
+        📚 <b>Temas que domino:</b><br>
+        Irrigação • Pragas • Doenças • Solos • Plantio<br>
+        Colheita • Clima • Adubação • Agronegócio • Culturas`
+    }
+];
+
+// ============================================================
+//  🤖 MOTOR DE IA LOCAL — Busca semântica por palavras-chave
+// ============================================================
+
+function buscarResposta(msg) {
+    const texto = msg.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // remove acentos
+
+    let melhorScore = 0;
+    let melhorResposta = null;
+
+    for (const item of conhecimento) {
+        let score = 0;
+        for (const chave of item.chaves) {
+            const chaveNorm = chave.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            if (texto.includes(chaveNorm)) score++;
+        }
+        if (score > melhorScore) {
+            melhorScore = score;
+            melhorResposta = item.resposta;
+        }
     }
 
-});
+    if (melhorResposta) return melhorResposta;
+
+    // Resposta padrão quando não entende
+    return `🤔 <b>Não entendi bem sua pergunta.</b><br>
+    Tente perguntar sobre:<br>
+    🌱 Plantio &nbsp;|&nbsp; 💧 Irrigação &nbsp;|&nbsp; 🐛 Pragas<br>
+    🌍 Solos &nbsp;|&nbsp; 🌾 Colheita &nbsp;|&nbsp; ☁️ Clima &nbsp;|&nbsp; 🌿 Culturas<br><br>
+    Ou use: <b>solo [umidade 0-10] [temperatura 0-10]</b> para análise de irrigação.`;
+}
+
+// ============================================================
+//  💬 CHAT
+// ============================================================
+
+const menu     = document.getElementById("menu");
+const catalogo = document.getElementById("catalogo");
+const escrever = document.getElementById("escrever");
+const chat     = document.getElementById("chat");
+
+menu.addEventListener("click", () => catalogo.classList.toggle("excluir"));
+
+function addMsg(tipo, html, tag="") {
+    const div = document.createElement("div");
+    div.className = tipo;
+    div.innerHTML = tag ? `<span class="tag">${tag}</span>${html}` : html;
+    chat.appendChild(div);
+    window.scrollTo(0, document.body.scrollHeight);
+    return div;
+}
+
+function digitando(callback) {
+    const loader = addMsg("loader", "✍️ Agro.ia está processando...");
+    setTimeout(() => { loader.remove(); callback(); }, 600 + Math.random() * 400);
+}
+
+async function enviarMensagem() {
+    const msg = escrever.value.trim();
+    if (!msg) return;
+
+    addMsg("mensagem-user", msg);
+    escrever.value = "";
+
+    // ── Comando Rede Neural: "solo X Y" ──
+    const soloReg = msg.toLowerCase().match(/solo\s+([\d.]+)\s+([\d.]+)/);
+    if (soloReg) {
+        const u = parseFloat(soloReg[1]);
+        const t = parseFloat(soloReg[2]);
+
+        if (u < 0 || u > 10 || t < 0 || t > 10) {
+            digitando(() => addMsg("mensagem-ia",
+                "⚠️ Use valores entre <b>0</b> e <b>10</b>.<br>Exemplo: <em>solo 3 8</em>",
+                "🧠 Rede Neural"));
+            return;
+        }
+
+        digitando(() => {
+            const pred = prever(u, t);
+            const pct  = (pred * 100).toFixed(1);
+            let icone, texto, barra;
+
+            if (pred > 0.68) {
+                icone = "💧"; barra = `<div style="background:#ff6b6b;height:10px;border-radius:5px;width:${pct}%;margin:6px 0"></div>`;
+                texto = `<span style="color:#ff6b6b;font-weight:bold">IRRIGAÇÃO NECESSÁRIA</span><br>Solo muito seco ou temperatura elevada.`;
+            } else if (pred > 0.42) {
+                icone = "🌤️"; barra = `<div style="background:#ffd93d;height:10px;border-radius:5px;width:${pct}%;margin:6px 0"></div>`;
+                texto = `<span style="color:#ffd93d;font-weight:bold">MONITORAR</span><br>Condições intermediárias — verifique o solo fisicamente.`;
+            } else {
+                icone = "✅"; barra = `<div style="background:limegreen;height:10px;border-radius:5px;width:${pct}%;margin:6px 0"></div>`;
+                texto = `<span style="color:limegreen;font-weight:bold">SEM NECESSIDADE</span><br>Solo com boa umidade para a temperatura atual.`;
+            }
+
+            addMsg("mensagem-ia",
+                `${icone} <b>Análise de Solo</b><br>
+                 Umidade: <b>${u}/10</b> &nbsp;|&nbsp; Temperatura: <b>${t}/10</b><br>
+                 Necessidade de irrigação: <b>${pct}%</b>
+                 ${barra}
+                 ${texto}`,
+                "🧠 Rede Neural Agrícola");
+        });
+        return;
+    }
+
+    // ── Base de conhecimento ──
+    digitando(() => {
+        const resposta = buscarResposta(msg);
+        addMsg("mensagem-ia", resposta, "🌿 Agro.ia");
+    });
+}
+
+escrever.addEventListener("keypress", e => { if (e.key === "Enter") enviarMensagem(); });
+document.getElementById("btn-send").addEventListener("click", enviarMensagem);
 </script>
+
 </body>
 </html>
