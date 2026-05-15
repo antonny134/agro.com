@@ -408,6 +408,7 @@ const menu     = document.getElementById("menu");
 const catalogo = document.getElementById("catalogo");
 const escrever = document.getElementById("escrever");
 const chat     = document.getElementById("chat");
+const API_BASE = 'http://127.0.0.1:3001';
 
 menu.addEventListener("click", () => catalogo.classList.toggle("excluir"));
 
@@ -422,7 +423,13 @@ function addMsg(tipo, html, tag="") {
 
 function digitando(callback) {
     const loader = addMsg("loader", "✍️ Agro.ia está processando...");
-    setTimeout(() => { loader.remove(); callback(); }, 600 + Math.random() * 400);
+    const done = () => { loader.remove(); };
+    const result = callback();
+    if (result && typeof result.then === 'function') {
+        result.finally(done);
+    } else {
+        setTimeout(done, 600 + Math.random() * 400);
+    }
 }
 
 async function enviarMensagem() {
@@ -432,7 +439,6 @@ async function enviarMensagem() {
     addMsg("mensagem-user", msg);
     escrever.value = "";
 
-    // ── Comando Rede Neural: "solo X Y" ──
     const soloReg = msg.toLowerCase().match(/solo\s+([\d.]+)\s+([\d.]+)/);
     if (soloReg) {
         const u = parseFloat(soloReg[1]);
@@ -445,7 +451,7 @@ async function enviarMensagem() {
             return;
         }
 
-        digitando(() => {
+        digitando(async () => {
             const pred = prever(u, t);
             const pct  = (pred * 100).toFixed(1);
             let icone, texto, barra;
@@ -472,16 +478,31 @@ async function enviarMensagem() {
         return;
     }
 
-    // ── Base de conhecimento ──
-    digitando(() => {
-        const resposta = buscarResposta(msg);
-        addMsg("mensagem-ia", resposta, "🌿 Agro.ia");
+    digitando(async () => {
+        try {
+            const response = await fetch(`${API_BASE}/api/ia`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msg })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API de IA falhou: ${response.status}`);
+            }
+
+            const data = await response.json();
+            addMsg("mensagem-ia", data.answer || "Desculpe, não consegui gerar uma resposta.", "🌿 Agro.ia");
+        } catch (error) {
+            console.error(error);
+            const resposta = buscarResposta(msg);
+            addMsg("mensagem-ia", resposta, "🌿 Agro.ia");
+        }
     });
 }
 
 escrever.addEventListener("keypress", e => { if (e.key === "Enter") enviarMensagem(); });
 document.getElementById("btn-send").addEventListener("click", enviarMensagem);
 </script>
-
+<script src="server.js"></script>
 </body>
 </html>
