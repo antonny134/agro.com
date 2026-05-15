@@ -175,9 +175,7 @@ function gerarRespostaIA(msg) {
     Exemplo: <em>solo 3 8</em> ou <em>como plantar feijão</em> ou <em>qual adubo usar</em>.`;
 }
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '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';
-const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
-
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
 async function callOpenAI(message) {
   if (!OPENAI_API_KEY) {
     throw new Error('OPENAI_API_KEY não configurada');
