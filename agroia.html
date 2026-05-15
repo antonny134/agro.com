@@ -104,7 +104,9 @@
             transition: background 0.2s;
         }
         .btn-send:hover { background: darkgreen; }
-
+        .menu{
+            top: 19px;
+        }
         @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
     </style>
 </head>
@@ -121,7 +123,14 @@
 <nav class="catalogo" id="catalogo">
     <a href="index.html"><i class="bi bi-house"></i> <span>Home</span></a>
     <a href="lojas.html"><i class="bi bi-shop"></i> <span>Lojas on-line</span></a>
-    <a href="produtos.html"><i class="bi bi-cart"></i> <span>Produtos</span></a>
+    <a href="#" id="nao"><i class="bi bi-cart"></i> <span>Produtos</span></a>
+    <script>
+        const nao = document.getElementById("nao");
+        //funçao
+        nao.addEventListener("click",function(event){
+            alert("nâo é possivel acessa")
+        })
+    </script>
 </nav>
 
 <div class="chat" id="chat">
@@ -220,7 +229,7 @@ treinar().then(() => {
 
 const conhecimento = [
     {
-        chaves: ["irrigação","irrigar","regar","água","molhar"],
+        chaves: ["irrigação","irrigar","regar","água","molhar","umidade","aspersão","gotejamento","sulco","seco","encharcar"],
         resposta: `💧 <b>Irrigação Agrícola</b><br>
         • <b>Gotejamento:</b> Ideal para frutas e hortaliças — econômiza até 50% de água<br>
         • <b>Aspersão:</b> Boa para grãos e pastagens<br>
@@ -228,7 +237,7 @@ const conhecimento = [
         💡 <b>Dica:</b> Use o comando <b>solo [umidade] [temperatura]</b> para a IA analisar se seu solo precisa de água!`
     },
     {
-        chaves: ["praga","inseto","lagarta","pulgão","mosca","percevejo","besouro","broca"],
+        chaves: ["praga","inseto","lagarta","pulgão","mosca","percevejo","besouro","broca","controle","pragas","defensivo","pesticida","manejo integrado"],
         resposta: `🐛 <b>Controle de Pragas</b><br>
         • <b>MIP (Manejo Integrado):</b> Monitore antes de aplicar defensivos<br>
         • <b>Controle biológico:</b> Trichogramma, Bacillus thuringiensis, predadores naturais<br>
@@ -246,7 +255,7 @@ const conhecimento = [
         🌿 O diagnóstico correto é fundamental — consulte um fitopatologista.`
     },
     {
-        chaves: ["solo","terra","adubo","fertilizante","npk","calcário","ph","nutriente"],
+        chaves: ["solo","terra","adubo","fertilizante","npk","calcário","ph","nutriente","matéria orgânica","fertilidade","textura","compactação","calagem"],
         resposta: `🌍 <b>Solos e Nutrição</b><br>
         • <b>pH ideal:</b> 6.0 a 6.5 para maioria das culturas<br>
         • <b>Calagem:</b> Corrija o pH com calcário antes do plantio<br>
@@ -283,7 +292,7 @@ const conhecimento = [
         Qual cultura você quer saber mais? Pergunte!`
     },
     {
-        chaves: ["clima","chuva","seca","temperatura","geada","vento","previsão"],
+        chaves: ["clima","chuva","seca","temperatura","geada","vento","previsão","tempo","estação","meteorologia","frio","calor"],
         resposta: `🌤️ <b>Clima e Agricultura</b><br>
         • <b>Seca:</b> Irrigação de salvação + cobertura do solo<br>
         • <b>Geada:</b> Plantio tardio, quebra-ventos, irrigação noturna preventiva<br>
@@ -338,9 +347,18 @@ const conhecimento = [
 //  🤖 MOTOR DE IA LOCAL — Busca semântica por palavras-chave
 // ============================================================
 
+function normalizar(texto) {
+    return texto.toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+}
+
+function escaparRegex(texto) {
+    return texto.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function buscarResposta(msg) {
-    const texto = msg.toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // remove acentos
+    const texto = normalizar(msg);
 
     let melhorScore = 0;
     let melhorResposta = null;
@@ -348,8 +366,13 @@ function buscarResposta(msg) {
     for (const item of conhecimento) {
         let score = 0;
         for (const chave of item.chaves) {
-            const chaveNorm = chave.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            if (texto.includes(chaveNorm)) score++;
+            const chaveNorm = normalizar(chave);
+            const regex = new RegExp("\\b" + escaparRegex(chaveNorm) + "\\b", "g");
+            if (regex.test(texto)) score += 3;
+            else if (texto.includes(chaveNorm)) score += 1;
+        }
+        if (score > 0 && /\b(como|quando|qual|por que|preciso|devo|recomenda|onde|melhor)\b/.test(texto)) {
+            score += 1;
         }
         if (score > melhorScore) {
             melhorScore = score;
@@ -357,14 +380,24 @@ function buscarResposta(msg) {
         }
     }
 
-    if (melhorResposta) return melhorResposta;
+    if (melhorResposta && melhorScore >= 3) return melhorResposta;
 
-    // Resposta padrão quando não entende
+    if (texto.includes("solo") || texto.includes("umidade") || texto.includes("temperatura") || texto.includes("regar") || texto.includes("irrig")) {
+        return `🌱 <b>Quer analisar seu solo?</b><br>
+        Use o comando: <b>solo [umidade 0-10] [temperatura 0-10]</b><br>
+        Exemplo: <em>solo 3 8</em><br>
+        Assim a Agro.ia usa a rede neural para prever a necessidade de irrigação e recomenda se o solo precisa de água.`;
+    }
+
+    if (texto.includes("praga") || texto.includes("doença") || texto.includes("inseto") || texto.includes("fungo")) {
+        return `🐛 <b>Fale mais sobre a praga ou doença.</b><br>
+        Pergunte, por exemplo: <em>como controlar pulgão</em> ou <em>o que fazer com ferrugem</em>.<br>
+        Posso ajudar com manejo integrado, armadilhas e prevenção.`;
+    }
+
     return `🤔 <b>Não entendi bem sua pergunta.</b><br>
-    Tente perguntar sobre:<br>
-    🌱 Plantio &nbsp;|&nbsp; 💧 Irrigação &nbsp;|&nbsp; 🐛 Pragas<br>
-    🌍 Solos &nbsp;|&nbsp; 🌾 Colheita &nbsp;|&nbsp; ☁️ Clima &nbsp;|&nbsp; 🌿 Culturas<br><br>
-    Ou use: <b>solo [umidade 0-10] [temperatura 0-10]</b> para análise de irrigação.`;
+    Pergunte sobre plantio, irrigação, pragas, doenças, solos, colheita, adubação ou clima.<br><br>
+    Exemplo: <em>solo 3 8</em> ou <em>como plantar feijão</em> ou <em>qual adubo usar</em>.`;
 }
 
 // ============================================================

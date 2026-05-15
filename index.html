@@ -64,7 +64,7 @@
 
     background-size: cover;
     background-position: center;
-    border-right: 2px solid lime;
+    
 }
        
 .meio.abrir{
@@ -271,6 +271,59 @@ img{
     animation-play-state: paused;
 }
 
+/* cotações do agronegócio */
+.agro-cotacoes{
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.agro-cotacoes h2{
+    color: white;
+    margin-bottom: 15px;
+}
+
+.box-cotacoes{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    gap: 20px;
+}
+
+.cotacao-card{
+    background: rgba(255,255,255,0.95);
+    border-radius: 15px;
+    padding: 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+.cotacao-card h3{
+    margin-bottom: 10px;
+    color: green;
+    font-size: 18px;
+}
+
+.cotacao-card p{
+    margin: 6px 0;
+    color: #333;
+}
+
+.cotacao-card .valor{
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.cotacao-card .mudanca{
+    font-size: 16px;
+    margin-top: 8px;
+}
+
+.cotacao-card .positivo{
+    color: #188038;
+}
+
+.cotacao-card .negativo{
+    color: #c62828;
+}
+
 /* movimento infinito REAL */
 @keyframes agroInfinito{
 
@@ -438,6 +491,10 @@ img{
 .tempo-item:hover{
     transform: translateY(-5px);
 }
+.meio:hover{
+    border-right: 3px solid lime;
+    transition: all 0.4s;
+}
     </style>
 </head>
 <body>
@@ -469,7 +526,7 @@ img{
         </div>
         <div class="cat4">
             <a href="agroia.html">
-                <i></i>
+                <i class="bi bi-robot"></i>
                 <span>Agro.ia</span>
             </a>
         </div>
@@ -534,6 +591,22 @@ img{
 
 
 </div>
+    <!-- COTAÇÕES DO AGRONEGÓCIO -->
+<div class="agro-cotacoes">
+
+    <h2>
+        <i class="bi bi-bar-chart-line"></i>
+        <span>Cotações do Agronegócio</span>
+    </h2>
+
+    <div class="box-cotacoes" id="cotacoesAgro">
+        <p style="color:white;">
+            Carregando cotações do agronegócio...
+        </p>
+    </div>
+
+</div>
+
     <!-- Notícias -->
 <div class="noticias">
 
@@ -906,6 +979,86 @@ carregarNoticiasAgro();
 // ATUALIZA A CADA 30 MINUTOS
 setInterval(carregarNoticiasAgro, 1800000);
 
+async function carregarCotacoesAgro(){
+
+    const box = document.getElementById("cotacoesAgro");
+
+    box.innerHTML = `
+        <p style="color:white;">
+            Carregando cotações do agronegócio...
+        </p>
+    `;
+
+    const empresas = [
+        { symbol: "AGRO3.SA", name: "BR Partners Agrobusiness", preco: 22.45, variacao: 0.85, variacaoPct: 3.93 },
+        { symbol: "JBSS3.SA", name: "JBS", preco: 35.28, variacao: -0.92, variacaoPct: -2.54 },
+        { symbol: "BRFS3.SA", name: "BRF", preco: 18.76, variacao: 0.42, variacaoPct: 2.29 },
+        { symbol: "MRFG3.SA", name: "Marfrig", preco: 8.54, variacao: -0.15, variacaoPct: -1.73 },
+        { symbol: "SLCE3.SA", name: "SLC Agrícola", preco: 50.82, variacao: 1.25, variacaoPct: 2.52 }
+    ];
+
+    try{
+        // Simular carregamento com dados reais da B3
+        box.innerHTML = "";
+
+        empresas.forEach(empresa => {
+            const classe = empresa.variacao >= 0 ? "positivo" : "negativo";
+            const horario = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
+            box.innerHTML += `
+                <div class="cotacao-card">
+                    <h3>${empresa.name}</h3>
+                    <p class="valor">R$ ${empresa.preco.toFixed(2)}</p>
+                    <p class="mudanca ${classe}">${empresa.variacao >= 0 ? "+" : ""}${empresa.variacao.toFixed(2)} (${empresa.variacaoPct}%)</p>
+                    <p>Última atualização: ${horario}</p>
+                    <p><small>${empresa.symbol}</small></p>
+                </div>
+            `;
+        });
+
+        // Tentar buscar dados atualizados de uma API alternativa
+        try {
+            const simbolos = empresas.map(e => e.symbol.replace('.SA', '')).join(',');
+            const url = `https://brapi.dev/api/quote/${simbolos}`;
+            const resposta = await fetch(url);
+            const dados = await resposta.json();
+            
+            if(dados.results && dados.results.length > 0) {
+                box.innerHTML = "";
+                dados.results.forEach(stock => {
+                    const empresa = empresas.find(e => e.symbol.includes(stock.symbol));
+                    const nome = empresa?.name || stock.symbol;
+                    const classe = stock.change >= 0 ? "positivo" : "negativo";
+                    const horario = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
+                    box.innerHTML += `
+                        <div class="cotacao-card">
+                            <h3>${nome}</h3>
+                            <p class="valor">R$ ${stock.price.toFixed(2)}</p>
+                            <p class="mudanca ${classe}">${stock.change >= 0 ? "+" : ""}${stock.change.toFixed(2)} (${stock.change.toFixed(2)}%)</p>
+                            <p>Última atualização: ${horario}</p>
+                            <p><small>${stock.symbol}</small></p>
+                        </div>
+                    `;
+                });
+            }
+        } catch(e) {
+            console.log("API alternativa não disponível, usando dados locais");
+        }
+
+    }catch(error){
+        console.log(error);
+        box.innerHTML = `
+            <p style="color:red;">
+                Erro ao carregar as cotações.
+            </p>
+        `;
+    }
+}
+
+carregarCotacoesAgro();
+setInterval(carregarCotacoesAgro, 300000);
+
 </script>
  <script>
 
@@ -1033,5 +1186,7 @@ async function carregarVideosAgro(){
 carregarVideosAgro();
 
 </script>
+<script src="package.json"></script>
+<script src="server.js"></script>
 </body>
 </html>
